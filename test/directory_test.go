@@ -1,19 +1,21 @@
-package test
+package liberator_test
 
 import (
-	"testing"
-	"os"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"github.com/jmacdonald/liberator/filesystem/directory"
+	"os"
 )
 
-func TestSize(t *testing.T) {
-	// Set the expectedSize to the actual size
-	// of the sample directory's contents.
-	const expectedSize int64 = 512020
+var _ = Describe("Directory", func() {
+	Describe("Size", func() {
+		It("properly calculates the size of the sample directory", func() {
+			// Set the expectedSize to the actual size
+			// of the sample directory's contents.
+			const expectedSize int64 = 512020
 
-	// Call the Size function and make sure it returns the expected value.
-	dir, _ := os.Getwd()
-	if x := directory.Size(dir + "/sample"); x != expectedSize {
-		t.Errorf("directory.Size(%v) should return %v, but returned %v instead.", dir, expectedSize, x)
-	}
-}
+			dir, _ := os.Getwd()
+			Expect(directory.Size(dir + "/sample")).To(Equal(expectedSize));
+		})
+	})
+})
