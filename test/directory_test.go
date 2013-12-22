@@ -7,7 +7,9 @@ import (
 )
 
 func TestSize(t *testing.T) {
-	var expectedSize int64 = 512020
+	// Set the expectedSize to the actual size
+	// of the sample directory's contents.
+	const expectedSize int64 = 512020
 
 	// Call the Size function and make sure it returns the expected value.
 	dir, _ := os.Getwd()
