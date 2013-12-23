@@ -24,5 +24,15 @@ var _ = Describe("Format", func() {
 				Expect(output).To(Equal("512 bytes"))
 			})
 		})
+
+		Context("When passed more than a kilobyte but less than a megabyte", func() {
+			BeforeEach(func() {
+				input = 2900
+			})
+
+			It("returns the size in kilobytes", func() {
+				Expect(output).To(Equal("2.8 KB"))
+			})
+		})
 	})
 })
