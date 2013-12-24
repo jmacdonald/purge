@@ -34,5 +34,45 @@ var _ = Describe("Format", func() {
 				Expect(output).To(Equal("2.8 KB"))
 			})
 		})
+
+		Context("When passed more than a megabyte but less than a gigabyte", func() {
+			BeforeEach(func() {
+				input = 1290000
+			})
+
+			It("returns the size in megabytes", func() {
+				Expect(output).To(Equal("1.2 MB"))
+			})
+		})
+
+		Context("When passed more than a gigabyte but less than a terabyte", func() {
+			BeforeEach(func() {
+				input = 1290000000
+			})
+
+			It("returns the size in gigabytes", func() {
+				Expect(output).To(Equal("1.2 GB"))
+			})
+		})
+
+		Context("When passed more than a terabyte", func() {
+			BeforeEach(func() {
+				input = 1350000000000
+			})
+
+			It("returns the size in terabytes", func() {
+				Expect(output).To(Equal("1.2 TB"))
+			})
+		})
+
+		Context("When passed more than a petabyte", func() {
+			BeforeEach(func() {
+				input = 1360000000000000
+			})
+
+			It("still returns the size in terabytes", func() {
+				Expect(output).To(Equal("1236.9 TB"))
+			})
+		})
 	})
 })

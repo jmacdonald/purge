@@ -30,6 +30,15 @@ func Size(intSize int64) (formattedSize string) {
 	case size >= KB && size < MB:
 		quantity = size / KB
 		unit = "KB"
+	case size >= MB && size < GB:
+		quantity = size / MB
+		unit = "MB"
+	case size >= GB && size < TB:
+		quantity = size / GB
+		unit = "GB"
+	case size >= TB:
+		quantity = size / TB
+		unit = "TB"
 	}
 
 	// Use no decimal places for bytes, and one for anything else.
