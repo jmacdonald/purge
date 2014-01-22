@@ -3,6 +3,11 @@ package directory
 import "io/ioutil"
 import "os"
 
+type Entry struct {
+	Name string
+	Size int64
+}
+
 func Size(path string) (size int64) {
 	// Read the directory entries.
 	entries, _ := ioutil.ReadDir(path)
@@ -14,6 +19,17 @@ func Size(path string) (size int64) {
 		} else {
 			size += entry.Size()
 		}
+	}
+	return
+}
+
+func Entries(path string) (entries []*Entry) {
+	// Read the directory entries.
+	dir_entries, _ := ioutil.ReadDir(path)
+	entries = make([]*Entry, len(dir_entries))
+
+	for index, entry := range dir_entries {
+		entries[index] = &Entry{ Name: entry.Name(), Size: Size(path + "/" + entry.Name()) }
 	}
 	return
 }
