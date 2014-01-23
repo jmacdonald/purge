@@ -1,7 +1,7 @@
 package liberator_test
 
 import (
-	. "github.com/jmacdonald/liberator/format"
+	. "github.com/jmacdonald/liberator/view"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
