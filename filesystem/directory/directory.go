@@ -25,10 +25,10 @@ func Size(path string) (size int64) {
 
 func Entries(path string) (entries []*Entry) {
 	// Read the directory entries.
-	dir_entries, _ := ioutil.ReadDir(path)
-	entries = make([]*Entry, len(dir_entries))
+	dirEntries, _ := ioutil.ReadDir(path)
+	entries = make([]*Entry, len(dirEntries))
 
-	for index, entry := range dir_entries {
+	for index, entry := range dirEntries {
 		entries[index] = &Entry{ Name: entry.Name(), Size: Size(path + "/" + entry.Name()) }
 	}
 	return
