@@ -31,4 +31,42 @@ var _ = Describe("Navigator", func() {
 			Expect(navigator.Entries).To(Equal(directory.Entries(path)))
 		})
 	})
+
+	Describe("SelectNextEntry", func() {
+		JustBeforeEach(func() {
+			navigator.SelectNextEntry()
+		})
+
+		Context("directory has never been set", func() {
+			It("does not increment the selected index", func() {
+				Expect(navigator.SelectedIndex).To(BeZero())
+			})
+		})
+
+		Context("directory has been set and has entries", func() {
+			BeforeEach(func() {
+				path, _ = os.Getwd()
+				navigator.ChangeDirectory(path)
+			})
+
+			It("increments the selected index by one", func() {
+				Expect(navigator.SelectedIndex).To(BeEquivalentTo(1))
+			})
+
+			Context("last entry is selected", func() {
+				var selectedIndex uint16
+
+				BeforeEach(func() {
+					for uint16(len(navigator.Entries))-navigator.SelectedIndex > 1 {
+						navigator.SelectNextEntry()
+					}
+					selectedIndex = navigator.SelectedIndex
+				})
+
+				It("does not increment the selected index", func() {
+					Expect(navigator.SelectedIndex).To(Equal(selectedIndex))
+				})
+			})
+		})
+	})
 })
