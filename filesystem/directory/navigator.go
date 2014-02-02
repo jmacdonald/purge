@@ -1,18 +1,31 @@
 package directory
 
 type Navigator struct {
-	CurrentPath   string
-	SelectedIndex uint16
-	Entries       []*Entry
+	currentPath   string
+	selectedIndex uint16
+	entries       []*Entry
+}
+
+/* Accessor Methods */
+func (navigator *Navigator) CurrentPath() string {
+	return navigator.currentPath
+}
+
+func (navigator *Navigator) SelectedIndex() uint16 {
+	return navigator.selectedIndex
+}
+
+func (navigator *Navigator) Entries() []*Entry {
+	return navigator.entries
 }
 
 func (navigator *Navigator) ChangeDirectory(path string) {
-	navigator.CurrentPath = path
-	navigator.Entries = Entries(path)
+	navigator.currentPath = path
+	navigator.entries = Entries(path)
 }
 
 func (navigator *Navigator) SelectNextEntry() {
-	if uint16(len(navigator.Entries))-navigator.SelectedIndex > 1 {
-		navigator.SelectedIndex++
+	if uint16(len(navigator.entries))-navigator.selectedIndex > 1 {
+		navigator.selectedIndex++
 	}
 }

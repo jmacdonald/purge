@@ -24,11 +24,11 @@ var _ = Describe("Navigator", func() {
 		})
 
 		It("updates CurrentPath with its path argument", func() {
-			Expect(navigator.CurrentPath).To(Equal(path))
+			Expect(navigator.CurrentPath()).To(Equal(path))
 		})
 
 		It("updates Entries using path argument", func() {
-			Expect(navigator.Entries).To(Equal(directory.Entries(path)))
+			Expect(navigator.Entries()).To(Equal(directory.Entries(path)))
 		})
 	})
 
@@ -39,7 +39,7 @@ var _ = Describe("Navigator", func() {
 
 		Context("directory has never been set", func() {
 			It("does not increment the selected index", func() {
-				Expect(navigator.SelectedIndex).To(BeZero())
+				Expect(navigator.SelectedIndex()).To(BeZero())
 			})
 		})
 
@@ -50,21 +50,21 @@ var _ = Describe("Navigator", func() {
 			})
 
 			It("increments the selected index by one", func() {
-				Expect(navigator.SelectedIndex).To(BeEquivalentTo(1))
+				Expect(navigator.SelectedIndex()).To(BeEquivalentTo(1))
 			})
 
 			Context("last entry is selected", func() {
 				var selectedIndex uint16
 
 				BeforeEach(func() {
-					for uint16(len(navigator.Entries))-navigator.SelectedIndex > 1 {
+					for uint16(len(navigator.Entries()))-navigator.SelectedIndex() > 1 {
 						navigator.SelectNextEntry()
 					}
-					selectedIndex = navigator.SelectedIndex
+					selectedIndex = navigator.SelectedIndex()
 				})
 
 				It("does not increment the selected index", func() {
-					Expect(navigator.SelectedIndex).To(Equal(selectedIndex))
+					Expect(navigator.SelectedIndex()).To(Equal(selectedIndex))
 				})
 			})
 		})
