@@ -9,11 +9,14 @@ package directory
 import "io/ioutil"
 import "os"
 
+// Structure representing a directory entry.
 type Entry struct {
 	Name string
 	Size int64
 }
 
+// Calculates and returns the size (in
+// bytes) of the directory for the given path.
 func Size(path string) (size int64) {
 	// Read the directory entries.
 	entries, _ := ioutil.ReadDir(path)
@@ -29,6 +32,8 @@ func Size(path string) (size int64) {
 	return
 }
 
+// Returns a list of entries (and their sizes) for the given
+// path. The current and parent (./..) entries are not included.
 func Entries(path string) (entries []*Entry) {
 	// Read the directory entries.
 	dirEntries, _ := ioutil.ReadDir(path)

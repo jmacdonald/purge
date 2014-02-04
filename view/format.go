@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-// Declare size interval constants
+// Declare size interval constants.
 const (
     _ = iota
     KB float64 = 1 << (10*iota)
@@ -14,15 +14,20 @@ const (
     TB
 )
 
-func Size(intSize int64) (formattedSize string) {
+// Given a size in bytes, generates a presentable string
+// in the unit most appropriate for the number of bytes.
+func Size(sizeInBytes int64) (formattedSize string) {
+
+	// Constituent components of the formatted size.
 	var quantity float64
 	var formattedQuantity string
 	var unit string
 
-	// Convert the size argument so that we can preserve
-	// decimals when converting to other units.
-	size := float64(intSize)
+	// Convert the size argument so that we can
+	// preserve decimals when converting to other units.
+	size := float64(sizeInBytes)
 
+	// Determine units, calculating quantity once decided.
 	switch {
 	case size < KB:
 		quantity = size
@@ -43,11 +48,13 @@ func Size(intSize int64) (formattedSize string) {
 
 	// Use no decimal places for bytes, and one for anything else.
 	if unit == "bytes" {
-		formattedQuantity = strconv.FormatInt(intSize, 10)
+		formattedQuantity = strconv.FormatInt(sizeInBytes, 10)
 	} else {
 		formattedQuantity = strconv.FormatFloat(quantity, 'f', 1, 64)
 	}
 
+	// Create the formatted size using the final quantity and unit.
 	formattedSize = fmt.Sprintf("%v %v", formattedQuantity, unit)
+
 	return
 }
