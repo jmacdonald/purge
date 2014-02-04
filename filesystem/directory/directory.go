@@ -1,3 +1,9 @@
+/*
+Package directory implements functionality for navigating
+and listing directories, including size calculations.
+
+Directory paths are always returned without a trailing slash.
+*/
 package directory
 
 import "io/ioutil"
