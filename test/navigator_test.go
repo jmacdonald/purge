@@ -17,10 +17,10 @@ var _ = Describe("Navigator", func() {
 		navigator = new(directory.Navigator)
 	})
 
-	Describe("ChangeDirectory", func() {
+	Describe("SetWorkingDirectory", func() {
 		BeforeEach(func() {
 			path, _ = os.Getwd()
-			navigator.ChangeDirectory(path)
+			navigator.SetWorkingDirectory(path)
 		})
 
 		It("updates CurrentPath with its path argument", func() {
@@ -35,7 +35,7 @@ var _ = Describe("Navigator", func() {
 			navigator.SelectNextEntry()
 			Expect(navigator.SelectedIndex()).To(BeEquivalentTo(1))
 
-			navigator.ChangeDirectory(path)
+			navigator.SetWorkingDirectory(path)
 			Expect(navigator.SelectedIndex()).To(BeZero())
 		})
 	})
@@ -54,7 +54,7 @@ var _ = Describe("Navigator", func() {
 		Context("directory has been set and has entries", func() {
 			BeforeEach(func() {
 				path, _ = os.Getwd()
-				navigator.ChangeDirectory(path)
+				navigator.SetWorkingDirectory(path)
 			})
 
 			It("increments the selected index by one", func() {
@@ -95,7 +95,7 @@ var _ = Describe("Navigator", func() {
 		Context("directory has been set and has entries", func() {
 			BeforeEach(func() {
 				path, _ = os.Getwd()
-				navigator.ChangeDirectory(path)
+				navigator.SetWorkingDirectory(path)
 			})
 
 			It("does not change the selected index", func() {

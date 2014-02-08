@@ -24,10 +24,10 @@ func (navigator *Navigator) Entries() []*Entry {
 	return navigator.entries
 }
 
-// Changes the navigator's current directory path,
+// Sets the navigator's current directory path,
 // fetches the entries for the newly changed directory,
 // and resets the selected index to zero.
-func (navigator *Navigator) ChangeDirectory(path string) {
+func (navigator *Navigator) SetWorkingDirectory(path string) {
 	navigator.currentPath = path
 	navigator.entries = Entries(path)
 	navigator.selectedIndex = 0
