@@ -30,6 +30,14 @@ var _ = Describe("Navigator", func() {
 		It("updates Entries using path argument", func() {
 			Expect(navigator.Entries()).To(Equal(directory.Entries(path)))
 		})
+
+		It("resets SelectedIndex to zero", func() {
+			navigator.SelectNextEntry()
+			Expect(navigator.SelectedIndex()).To(BeEquivalentTo(1))
+
+			navigator.ChangeDirectory(path)
+			Expect(navigator.SelectedIndex()).To(BeZero())
+		})
 	})
 
 	Describe("SelectNextEntry", func() {
