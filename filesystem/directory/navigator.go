@@ -1,5 +1,7 @@
 package directory
 
+import "os"
+
 // Structure used to keep state when
 // navigating directories and their entries.
 type Navigator struct {
@@ -26,11 +28,14 @@ func (navigator *Navigator) Entries() []*Entry {
 
 // Sets the navigator's current directory path,
 // fetches the entries for the newly changed directory,
-// and resets the selected index to zero.
+// and resets the selected index to zero (if the directory is valid).
 func (navigator *Navigator) SetWorkingDirectory(path string) {
-	navigator.currentPath = path
-	navigator.entries = Entries(path)
-	navigator.selectedIndex = 0
+	_, err := os.Stat(path)
+	if err == nil {
+		navigator.currentPath = path
+		navigator.entries = Entries(path)
+		navigator.selectedIndex = 0
+	}
 }
 
 // Moves the selectedIndex to the next entry in the

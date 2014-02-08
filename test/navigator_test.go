@@ -20,27 +20,58 @@ var _ = Describe("Navigator", func() {
 	Describe("SetWorkingDirectory", func() {
 		var path string
 
+		// Change the working directory right before every test.
 		JustBeforeEach(func() {
 			navigator.SetWorkingDirectory(path)
 		})
 
 		Context("path is a valid directory", func() {
-			path, _ = os.Getwd()
+			BeforeEach(func() {
+				path, _ = os.Getwd()
+			})
 
-			It("updates CurrentPath with its path argument", func() {
+			It("updates current path with its path argument", func() {
 				Expect(navigator.CurrentPath()).To(Equal(path))
 			})
 
-			It("updates Entries using path argument", func() {
+			It("updates entries using path argument", func() {
 				Expect(navigator.Entries()).To(Equal(directory.Entries(path)))
 			})
 
-			It("resets SelectedIndex to zero", func() {
+			It("resets selected index to zero", func() {
 				navigator.SelectNextEntry()
 				Expect(navigator.SelectedIndex()).To(BeEquivalentTo(1))
 
 				navigator.SetWorkingDirectory(path)
 				Expect(navigator.SelectedIndex()).To(BeZero())
+			})
+		})
+
+		Context("path is an invalid directory", func() {
+			original_path, _ := os.Getwd()
+
+			BeforeEach(func() {
+				path = "/asdf"
+
+				// Set the working directory to something valid
+				// so that current path and entries are set.
+				navigator.SetWorkingDirectory(original_path)
+
+				// Increment the selected index so we can ensure
+				// it isn't reset to zero later on.
+				navigator.SelectNextEntry()
+			})
+
+			It("does not update current path", func() {
+				Expect(navigator.CurrentPath()).To(Equal(original_path))
+			})
+
+			It("does not update entries", func() {
+				Expect(navigator.Entries()).To(Equal(directory.Entries(original_path)))
+			})
+
+			It("does not reset selected index to zero", func() {
+				Expect(navigator.SelectedIndex()).To(BeEquivalentTo(1))
 			})
 		})
 	})
