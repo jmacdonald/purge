@@ -38,7 +38,7 @@ var _ = Describe("Navigator", func() {
 		})
 
 		Context("directory has never been set", func() {
-			It("does not increment the selected index", func() {
+			It("does not change the selected index", func() {
 				Expect(navigator.SelectedIndex()).To(BeZero())
 			})
 		})
@@ -57,13 +57,16 @@ var _ = Describe("Navigator", func() {
 				var selectedIndex uint16
 
 				BeforeEach(func() {
+					// Call SelectNextEntry() until the last entry is selected.
 					for uint16(len(navigator.Entries()))-navigator.SelectedIndex() > 1 {
 						navigator.SelectNextEntry()
 					}
+
+					// Keep a reference to the last index.
 					selectedIndex = navigator.SelectedIndex()
 				})
 
-				It("does not increment the selected index", func() {
+				It("does not change the selected index", func() {
 					Expect(navigator.SelectedIndex()).To(Equal(selectedIndex))
 				})
 			})
