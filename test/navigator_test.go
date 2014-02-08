@@ -18,25 +18,30 @@ var _ = Describe("Navigator", func() {
 	})
 
 	Describe("SetWorkingDirectory", func() {
-		BeforeEach(func() {
+		var path string
+
+		JustBeforeEach(func() {
+			navigator.SetWorkingDirectory(path)
+		})
+
+		Context("path is a valid directory", func() {
 			path, _ = os.Getwd()
-			navigator.SetWorkingDirectory(path)
-		})
 
-		It("updates CurrentPath with its path argument", func() {
-			Expect(navigator.CurrentPath()).To(Equal(path))
-		})
+			It("updates CurrentPath with its path argument", func() {
+				Expect(navigator.CurrentPath()).To(Equal(path))
+			})
 
-		It("updates Entries using path argument", func() {
-			Expect(navigator.Entries()).To(Equal(directory.Entries(path)))
-		})
+			It("updates Entries using path argument", func() {
+				Expect(navigator.Entries()).To(Equal(directory.Entries(path)))
+			})
 
-		It("resets SelectedIndex to zero", func() {
-			navigator.SelectNextEntry()
-			Expect(navigator.SelectedIndex()).To(BeEquivalentTo(1))
+			It("resets SelectedIndex to zero", func() {
+				navigator.SelectNextEntry()
+				Expect(navigator.SelectedIndex()).To(BeEquivalentTo(1))
 
-			navigator.SetWorkingDirectory(path)
-			Expect(navigator.SelectedIndex()).To(BeZero())
+				navigator.SetWorkingDirectory(path)
+				Expect(navigator.SelectedIndex()).To(BeZero())
+			})
 		})
 	})
 
