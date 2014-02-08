@@ -80,4 +80,45 @@ var _ = Describe("Navigator", func() {
 			})
 		})
 	})
+
+	Describe("SelectPreviousEntry", func() {
+		JustBeforeEach(func() {
+			navigator.SelectPreviousEntry()
+		})
+
+		Context("directory has never been set", func() {
+			It("does not change the selected index", func() {
+				Expect(navigator.SelectedIndex()).To(BeZero())
+			})
+		})
+
+		Context("directory has been set and has entries", func() {
+			BeforeEach(func() {
+				path, _ = os.Getwd()
+				navigator.ChangeDirectory(path)
+			})
+
+			It("does not change the selected index", func() {
+				Expect(navigator.SelectedIndex()).To(BeZero())
+			})
+
+			Context("last entry is selected", func() {
+				var selectedIndex uint16
+
+				BeforeEach(func() {
+					// Call SelectNextEntry() until the last entry is selected.
+					for uint16(len(navigator.Entries()))-navigator.SelectedIndex() > 1 {
+						navigator.SelectNextEntry()
+					}
+
+					// Keep a reference to the last index.
+					selectedIndex = navigator.SelectedIndex()
+				})
+
+				It("decrements the selected index by one", func() {
+					Expect(navigator.SelectedIndex()).To(BeEquivalentTo(selectedIndex-1))
+				})
+			})
+		})
+	})
 })

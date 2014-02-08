@@ -40,3 +40,11 @@ func (navigator *Navigator) SelectNextEntry() {
 		navigator.selectedIndex++
 	}
 }
+
+// Moves the selectedIndex to the previous entry in the
+// list, if the current selection isn't already at the beginning.
+func (navigator *Navigator) SelectPreviousEntry() {
+	if navigator.selectedIndex > 0 {
+		navigator.selectedIndex--
+	}
+}
