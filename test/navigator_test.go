@@ -18,7 +18,6 @@ var _ = Describe("Navigator", func() {
 	})
 
 	Describe("SetWorkingDirectory", func() {
-		var path string
 		var error error
 
 		// Change the working directory right before every test.
@@ -29,6 +28,7 @@ var _ = Describe("Navigator", func() {
 		Context("path is a valid directory", func() {
 			BeforeEach(func() {
 				path, _ = os.Getwd()
+				path += "/sample"
 			})
 
 			It("returns a nil error", func() {
@@ -52,7 +52,40 @@ var _ = Describe("Navigator", func() {
 			})
 		})
 
-		Context("path is an invalid directory", func() {
+		Context("path is a file", func() {
+			original_path, _ := os.Getwd()
+
+			BeforeEach(func() {
+				path, _ = os.Getwd()
+				path += "/sample/file"
+
+				// Set the working directory to something valid
+				// so that current path and entries are set.
+				navigator.SetWorkingDirectory(original_path)
+
+				// Increment the selected index so we can ensure
+				// it isn't reset to zero later on.
+				navigator.SelectNextEntry()
+			})
+
+			It("returns an error", func() {
+				Expect(error).ToNot(BeNil())
+			})
+
+			It("does not update current path", func() {
+				Expect(navigator.CurrentPath()).To(Equal(original_path))
+			})
+
+			It("does not update entries", func() {
+				Expect(navigator.Entries()).To(Equal(directory.Entries(original_path)))
+			})
+
+			It("does not reset selected index to zero", func() {
+				Expect(navigator.SelectedIndex()).To(BeEquivalentTo(1))
+			})
+		})
+
+		Context("path is invalid", func() {
 			original_path, _ := os.Getwd()
 
 			BeforeEach(func() {

@@ -1,6 +1,7 @@
 package directory
 
 import "os"
+import "errors"
 
 // Structure used to keep state when
 // navigating directories and their entries.
@@ -30,12 +31,15 @@ func (navigator *Navigator) Entries() []*Entry {
 // fetches the entries for the newly changed directory,
 // and resets the selected index to zero (if the directory is valid).
 func (navigator *Navigator) SetWorkingDirectory(path string) (error error) {
-	_, error = os.Stat(path)
-	if error == nil {
+	file, error := os.Stat(path)
+	if error == nil && file.IsDir() {
 		navigator.currentPath = path
 		navigator.entries = Entries(path)
 		navigator.selectedIndex = 0
+	} else if error == nil {
+		error = errors.New("path is not a directory")
 	}
+
 	return
 }
 
