@@ -29,13 +29,14 @@ func (navigator *Navigator) Entries() []*Entry {
 // Sets the navigator's current directory path,
 // fetches the entries for the newly changed directory,
 // and resets the selected index to zero (if the directory is valid).
-func (navigator *Navigator) SetWorkingDirectory(path string) {
-	_, err := os.Stat(path)
-	if err == nil {
+func (navigator *Navigator) SetWorkingDirectory(path string) (error error) {
+	_, error = os.Stat(path)
+	if error == nil {
 		navigator.currentPath = path
 		navigator.entries = Entries(path)
 		navigator.selectedIndex = 0
 	}
+	return
 }
 
 // Moves the selectedIndex to the next entry in the
