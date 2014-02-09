@@ -199,4 +199,50 @@ var _ = Describe("Navigator", func() {
 			})
 		})
 	})
+
+	Describe("IntoSelectedEntry", func() {
+		var error error
+
+		JustBeforeEach(func() {
+			error = navigator.IntoSelectedEntry()
+		})
+
+		BeforeEach(func() {
+			path, _ = os.Getwd()
+			path += "/sample"
+			navigator.SetWorkingDirectory(path)
+		})
+
+		Context("a directory is selected", func() {
+			BeforeEach(func() {
+				for navigator.Entries()[navigator.SelectedIndex()].Name != "directory" {
+					navigator.SelectNextEntry()
+				}
+			})
+
+			It("navigates into the selected entry", func() {
+				Expect(navigator.CurrentPath()).To(BeEquivalentTo(path + "/directory"))
+			})
+
+			It("does not return an error", func() {
+				Expect(error).To(BeNil())
+			})
+		})
+
+		Context("a file is selected", func() {
+			BeforeEach(func() {
+				for navigator.Entries()[navigator.SelectedIndex()].Name != "file" {
+					navigator.SelectNextEntry()
+				}
+			})
+
+			It("does not change the working directory", func() {
+				Expect(navigator.CurrentPath()).To(BeEquivalentTo(path))
+			})
+
+			It("returns an error", func() {
+				Expect(error).ToNot(BeNil())
+			})
+		})
+	})
 })
