@@ -11,6 +11,7 @@ var _ = Describe("Navigator", func() {
 	var (
 		navigator *directory.Navigator
 		path      string
+		error error
 	)
 
 	BeforeEach(func() {
@@ -18,8 +19,6 @@ var _ = Describe("Navigator", func() {
 	})
 
 	Describe("SetWorkingDirectory", func() {
-		var error error
-
 		// Change the working directory right before every test.
 		JustBeforeEach(func() {
 			error = navigator.SetWorkingDirectory(path)
@@ -201,8 +200,6 @@ var _ = Describe("Navigator", func() {
 	})
 
 	Describe("IntoSelectedEntry", func() {
-		var error error
-
 		JustBeforeEach(func() {
 			error = navigator.IntoSelectedEntry()
 		})
@@ -242,6 +239,27 @@ var _ = Describe("Navigator", func() {
 
 			It("returns an error", func() {
 				Expect(error).ToNot(BeNil())
+			})
+		})
+	})
+
+	Describe("ToParentDirectory", func() {
+		var parent_path string
+
+		JustBeforeEach(func() {
+			error = navigator.ToParentDirectory()
+		})
+
+		Context("directory has a parent directory", func() {
+			BeforeEach(func() {
+				path, _ = os.Getwd()
+				parent_path = path + "/sample"
+				path += "/sample/directory"
+				navigator.SetWorkingDirectory(path)
+			})
+
+			It("navigates to the parent directory", func() {
+				Expect(navigator.CurrentPath()).To(BeEquivalentTo(parent_path))
 			})
 		})
 	})

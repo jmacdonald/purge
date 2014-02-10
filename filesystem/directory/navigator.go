@@ -2,6 +2,7 @@ package directory
 
 import "os"
 import "errors"
+import "path/filepath"
 
 // Structure used to keep state when
 // navigating directories and their entries.
@@ -63,4 +64,12 @@ func (navigator *Navigator) SelectPreviousEntry() {
 func (navigator *Navigator) IntoSelectedEntry() (error) {
 	entry := navigator.Entries()[navigator.SelectedIndex()]
 	return navigator.SetWorkingDirectory(navigator.CurrentPath() + "/" + entry.Name)
+}
+
+func (navigator *Navigator) ToParentDirectory() (error) {
+	parent_path, error := filepath.Abs(navigator.CurrentPath() + "/..")
+	if error != nil {
+		return error
+	}
+	return navigator.SetWorkingDirectory(parent_path)
 }
