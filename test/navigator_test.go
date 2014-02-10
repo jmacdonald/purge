@@ -115,6 +115,17 @@ var _ = Describe("Navigator", func() {
 				Expect(navigator.SelectedIndex()).To(BeEquivalentTo(1))
 			})
 		})
+
+		Context("path has a trailing slash", func() {
+			BeforeEach(func() {
+				path, _ = os.Getwd()
+				path += "/"
+			})	
+
+			It("strips the trailing slash", func() {
+				Expect(navigator.CurrentPath()).To(Equal(path[:len(path)-1]))
+			})
+		})
 	})
 
 	Describe("SelectNextEntry", func() {

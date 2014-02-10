@@ -34,6 +34,9 @@ func (navigator *Navigator) Entries() []*Entry {
 func (navigator *Navigator) SetWorkingDirectory(path string) (error error) {
 	file, error := os.Stat(path)
 	if error == nil && file.IsDir() {
+		// Strip trailing slash, if present.
+		if path[len(path)-1:] == "/" { path = path[:len(path)-1] }
+		
 		navigator.currentPath = path
 		navigator.entries = Entries(path)
 		navigator.selectedIndex = 0
