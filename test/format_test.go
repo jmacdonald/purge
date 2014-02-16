@@ -1,4 +1,4 @@
-package liberator_test
+package test
 
 import (
 	. "github.com/jmacdonald/liberator/view"
