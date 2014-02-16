@@ -11,7 +11,7 @@ var _ = Describe("Navigator", func() {
 	var (
 		navigator *directory.Navigator
 		path      string
-		error error
+		error     error
 	)
 
 	BeforeEach(func() {
@@ -120,7 +120,7 @@ var _ = Describe("Navigator", func() {
 			BeforeEach(func() {
 				path, _ = os.Getwd()
 				path += "/"
-			})	
+			})
 
 			It("strips the trailing slash", func() {
 				Expect(navigator.CurrentPath()).To(Equal(path[:len(path)-1]))
@@ -204,7 +204,7 @@ var _ = Describe("Navigator", func() {
 				})
 
 				It("decrements the selected index by one", func() {
-					Expect(navigator.SelectedIndex()).To(BeEquivalentTo(selectedIndex-1))
+					Expect(navigator.SelectedIndex()).To(BeEquivalentTo(selectedIndex - 1))
 				})
 			})
 		})

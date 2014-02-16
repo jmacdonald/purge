@@ -1,9 +1,9 @@
 package test
 
 import (
+	. "github.com/jmacdonald/liberator/filesystem/directory"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/jmacdonald/liberator/filesystem/directory"
 	"os"
 )
 
@@ -15,14 +15,14 @@ var _ = Describe("Directory", func() {
 			const expectedSize int64 = 512020
 
 			dir, _ := os.Getwd()
-			Expect(Size(dir + "/sample")).To(Equal(expectedSize));
+			Expect(Size(dir + "/sample")).To(Equal(expectedSize))
 		})
 	})
 
 	Describe("Entries", func() {
 		It("returns the correct number of entries", func() {
 			dir, _ := os.Getwd()
-			Expect(len(Entries(dir + "/sample"))).To(Equal(2));
+			Expect(len(Entries(dir + "/sample"))).To(Equal(2))
 		})
 
 		It("returns the proper names", func() {
@@ -44,7 +44,9 @@ var _ = Describe("Directory", func() {
 
 func contains(entries []*Entry, value string) bool {
 	for _, entry := range entries {
-		if entry.Name == value { return true }
+		if entry.Name == value {
+			return true
+		}
 	}
 	return false
 }
