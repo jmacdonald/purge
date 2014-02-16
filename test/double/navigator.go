@@ -4,7 +4,7 @@ type Navigator struct {
 	SelectNextEntryCalled     bool
 	SelectPreviousEntryCalled bool
 	IntoSelectedEntryCalled   bool
-	ToParentEntryCalled       bool
+	ToParentDirectoryCalled   bool
 }
 
 func (n *Navigator) SelectNextEntry() {
@@ -20,7 +20,7 @@ func (n *Navigator) IntoSelectedEntry() error {
 	return nil
 }
 
-func (n *Navigator) ToParentEntry() error {
-	n.ToParentEntryCalled = true
+func (n *Navigator) ToParentDirectory() error {
+	n.ToParentDirectoryCalled = true
 	return nil
 }
