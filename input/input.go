@@ -1,7 +1,11 @@
+// The input package is responsible for reading input data
+// and invoking the corresponding navigator actions.
 package input
 
 import "io"
 
+// Navigator defines the interface expected by the input package,
+// so that navigator actions can be called based on input data.
 type Navigator interface {
 	SelectNextEntry()
 	SelectPreviousEntry()
@@ -9,6 +13,8 @@ type Navigator interface {
 	ToParentDirectory() error
 }
 
+// Reads input data from source as a sequence of runes,
+// invoking a corresponding navigator action for certain values.
 func Read(source io.Reader, navigator Navigator) {
 	data := make([]byte, 5, 5)
 	bytesRead, error := source.Read(data)
