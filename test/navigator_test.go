@@ -9,13 +9,21 @@ import (
 
 var _ = Describe("Navigator", func() {
 	var (
-		navigator *directory.Navigator
-		path      string
-		error     error
+		navigator    *directory.Navigator
+		path         string
+		error        error
+		originalPath string
 	)
 
 	BeforeEach(func() {
-		navigator = new(directory.Navigator)
+		originalPath, _ = os.Getwd()
+		navigator = directory.NewNavigator(originalPath)
+	})
+
+	Describe("NewNavigator", func() {
+		It("sets the current path using its path argument", func() {
+			Expect(navigator.CurrentPath()).To(Equal(originalPath))
+		})
 	})
 
 	Describe("SetWorkingDirectory", func() {
@@ -52,15 +60,9 @@ var _ = Describe("Navigator", func() {
 		})
 
 		Context("path is a file", func() {
-			original_path, _ := os.Getwd()
-
 			BeforeEach(func() {
 				path, _ = os.Getwd()
 				path += "/sample/file"
-
-				// Set the working directory to something valid
-				// so that current path and entries are set.
-				navigator.SetWorkingDirectory(original_path)
 
 				// Increment the selected index so we can ensure
 				// it isn't reset to zero later on.
@@ -72,11 +74,11 @@ var _ = Describe("Navigator", func() {
 			})
 
 			It("does not update current path", func() {
-				Expect(navigator.CurrentPath()).To(Equal(original_path))
+				Expect(navigator.CurrentPath()).To(Equal(originalPath))
 			})
 
 			It("does not update entries", func() {
-				Expect(navigator.Entries()).To(Equal(directory.Entries(original_path)))
+				Expect(navigator.Entries()).To(Equal(directory.Entries(originalPath)))
 			})
 
 			It("does not reset selected index to zero", func() {
@@ -85,14 +87,8 @@ var _ = Describe("Navigator", func() {
 		})
 
 		Context("path is invalid", func() {
-			original_path, _ := os.Getwd()
-
 			BeforeEach(func() {
 				path = "/asdf"
-
-				// Set the working directory to something valid
-				// so that current path and entries are set.
-				navigator.SetWorkingDirectory(original_path)
 
 				// Increment the selected index so we can ensure
 				// it isn't reset to zero later on.
@@ -104,11 +100,11 @@ var _ = Describe("Navigator", func() {
 			})
 
 			It("does not update current path", func() {
-				Expect(navigator.CurrentPath()).To(Equal(original_path))
+				Expect(navigator.CurrentPath()).To(Equal(originalPath))
 			})
 
 			It("does not update entries", func() {
-				Expect(navigator.Entries()).To(Equal(directory.Entries(original_path)))
+				Expect(navigator.Entries()).To(Equal(directory.Entries(originalPath)))
 			})
 
 			It("does not reset selected index to zero", func() {
@@ -134,6 +130,10 @@ var _ = Describe("Navigator", func() {
 		})
 
 		Context("directory has never been set", func() {
+			BeforeEach(func() {
+				navigator = new(directory.Navigator)
+			})
+
 			It("does not change the selected index", func() {
 				Expect(navigator.SelectedIndex()).To(BeZero())
 			})

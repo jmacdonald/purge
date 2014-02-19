@@ -12,6 +12,13 @@ type Navigator struct {
 	entries       []*Entry
 }
 
+// NewNavigator constructs a new navigator object.
+func NewNavigator(path string) (navigator *Navigator) {
+	navigator = new(Navigator)
+	navigator.SetWorkingDirectory(path)
+	return
+}
+
 // Returns the navigator's current directory path.
 func (navigator *Navigator) CurrentPath() string {
 	return navigator.currentPath
@@ -35,8 +42,10 @@ func (navigator *Navigator) SetWorkingDirectory(path string) (error error) {
 	file, error := os.Stat(path)
 	if error == nil && file.IsDir() {
 		// Strip trailing slash, if present.
-		if path[len(path)-1:] == "/" { path = path[:len(path)-1] }
-		
+		if path[len(path)-1:] == "/" {
+			path = path[:len(path)-1]
+		}
+
 		navigator.currentPath = path
 		navigator.entries = Entries(path)
 		navigator.selectedIndex = 0
@@ -64,12 +73,12 @@ func (navigator *Navigator) SelectPreviousEntry() {
 }
 
 // Navigates into the selected entry, if it is a directory.
-func (navigator *Navigator) IntoSelectedEntry() (error) {
+func (navigator *Navigator) IntoSelectedEntry() error {
 	entry := navigator.Entries()[navigator.SelectedIndex()]
 	return navigator.SetWorkingDirectory(navigator.CurrentPath() + "/" + entry.Name)
 }
 
-func (navigator *Navigator) ToParentDirectory() (error) {
+func (navigator *Navigator) ToParentDirectory() error {
 	parent_path, error := filepath.Abs(navigator.CurrentPath() + "/..")
 	if error != nil {
 		return error
