@@ -8,13 +8,13 @@ import (
 )
 
 var _ = Describe("Input", func() {
-	Describe("Read", func() {
+	Describe("Process", func() {
 		var data double.Reader
 		var navigator *double.Navigator
 
 		JustBeforeEach(func() {
 			navigator = new(double.Navigator)
-			input.Read(data, navigator)
+			input.Process(data, navigator)
 		})
 
 		Context("input is a 'j'", func() {
