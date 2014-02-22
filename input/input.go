@@ -27,26 +27,16 @@ func Read(source io.Reader) (value rune) {
 	return
 }
 
-// Reads input data from source as a sequence of runes,
-// invoking a corresponding navigator action for certain values.
-func Process(source io.Reader, navigator Navigator) {
-	data := make([]byte, 5, 5)
-	bytesRead, error := source.Read(data)
-
-	// If there's valid data to be read,
-	// read it one rune at a time.
-	if bytesRead > 0 && error == nil {
-		for _, runeValue := range data {
-			switch runeValue {
-			case 'j':
-				navigator.SelectNextEntry()
-			case 'k':
-				navigator.SelectPreviousEntry()
-			case '\n':
-				navigator.IntoSelectedEntry()
-			case 'h':
-				navigator.ToParentDirectory()
-			}
-		}
+// Maps characters to their corresponding navigator actions.
+func Map(character rune, navigator Navigator) {
+	switch character {
+	case 'j':
+		navigator.SelectNextEntry()
+	case 'k':
+		navigator.SelectPreviousEntry()
+	case '\n':
+		navigator.IntoSelectedEntry()
+	case 'h':
+		navigator.ToParentDirectory()
 	}
 }

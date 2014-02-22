@@ -27,18 +27,18 @@ var _ = Describe("Input", func() {
 		})
 	})
 
-	Describe("Process", func() {
-		var data double.Reader
+	Describe("Map", func() {
+		var character rune
 		var navigator *double.Navigator
 
 		JustBeforeEach(func() {
 			navigator = new(double.Navigator)
-			input.Process(data, navigator)
+			input.Map(character, navigator)
 		})
 
 		Context("input is a 'j'", func() {
 			BeforeEach(func() {
-				data = "j"
+				character = 'j'
 			})
 
 			It("calls SelectNextEntry() on navigator", func() {
@@ -48,7 +48,7 @@ var _ = Describe("Input", func() {
 
 		Context("input is a 'k'", func() {
 			BeforeEach(func() {
-				data = "k"
+				character = 'k'
 			})
 
 			It("calls SelectPreviousEntry() on navigator", func() {
@@ -58,7 +58,7 @@ var _ = Describe("Input", func() {
 
 		Context("input is a carriage return", func() {
 			BeforeEach(func() {
-				data = "\n"
+				character = '\n'
 			})
 
 			It("calls IntoSelectedEntry() on navigator", func() {
@@ -68,7 +68,7 @@ var _ = Describe("Input", func() {
 
 		Context("input is an 'h'", func() {
 			BeforeEach(func() {
-				data = "h"
+				character = 'h'
 			})
 
 			It("calls ToParentDirectory() on navigator", func() {
