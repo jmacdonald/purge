@@ -78,6 +78,7 @@ func (navigator *Navigator) IntoSelectedEntry() error {
 	return navigator.SetWorkingDirectory(navigator.CurrentPath() + "/" + entry.Name)
 }
 
+// Navigates to the parent directory.
 func (navigator *Navigator) ToParentDirectory() error {
 	parent_path, error := filepath.Abs(navigator.CurrentPath() + "/..")
 	if error != nil {
