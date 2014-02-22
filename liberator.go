@@ -1,15 +1,19 @@
 package main
 
+import "github.com/nsf/termbox-go"
+import "time"
 import "os"
-import "fmt"
-import "github.com/jmacdonald/liberator/filesystem/directory"
-import "github.com/jmacdonald/liberator/input"
 
 func main() {
-	currentPath, _ := os.Getwd()
-	navigator := directory.NewNavigator(currentPath)
+	// Initialize a navigator in the current directory.
+	nav := directory.NewNavigator(os.Getwd())
 
+	// main application loop
 	for {
-		input.Read(os.Stdin, navigator)
+		// Read a character from STDIN.
+		character := input.Read(os.Stdin)
+
+		// Invoke the correspoding navigator action
+		input.Map(character, nav)
 	}
 }
