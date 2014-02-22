@@ -8,6 +8,25 @@ import (
 )
 
 var _ = Describe("Input", func() {
+	Describe("Read", func() {
+		var data double.Reader
+		var result rune
+
+		JustBeforeEach(func() {
+			result = input.Read(data)
+		})
+
+		Context("data is a single byte character", func() {
+			BeforeEach(func() {
+				data = "j"
+			})
+
+			It("returns the complete data", func() {
+				Expect(result).To(BeEquivalentTo(data))
+			})
+		})
+	})
+
 	Describe("Process", func() {
 		var data double.Reader
 		var navigator *double.Navigator
