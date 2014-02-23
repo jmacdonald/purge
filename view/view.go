@@ -5,5 +5,5 @@ data formatting and display updates (using termbox).
 package view
 
 type Viewer interface {
-	View() [][]string
+	View(maxRows uint16) [][2]string
 }
