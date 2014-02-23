@@ -2,6 +2,7 @@ package test
 
 import (
 	"github.com/jmacdonald/liberator/filesystem/directory"
+	"github.com/jmacdonald/liberator/view"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"os"
@@ -291,6 +292,17 @@ var _ = Describe("Navigator", func() {
 			It("returns a slice with the right number of entries", func() {
 				entryCount := len(navigator.Entries())
 				Expect(len(result)).To(Equal(entryCount))
+			})
+
+			Describe("slice array values", func() {
+				It("has its first value set to the first entry's name", func() {
+					Expect(result[0][0]).To(Equal(navigator.Entries()[0].Name))
+				})
+
+				It("has its second value set to the first entry's formatted size", func() {
+					formattedSize := view.Size(navigator.Entries()[0].Size)
+					Expect(result[0][1]).To(Equal(formattedSize))
+				})
 			})
 		})
 	})

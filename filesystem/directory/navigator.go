@@ -3,6 +3,7 @@ package directory
 import "os"
 import "errors"
 import "path/filepath"
+import "github.com/jmacdonald/liberator/view"
 
 // Structure used to keep state when
 // navigating directories and their entries.
@@ -90,7 +91,17 @@ func (navigator *Navigator) ToParentDirectory() error {
 // Generates a two-dimensional slice with all
 // of the data required for display.
 func (navigator *Navigator) View(maxRows uint16) (viewData [][2]string) {
+
+	// Calculate the number of entries and create
+	// a slice with that size and capacity.
 	entryCount := len(navigator.Entries())
 	viewData = make([][2]string, entryCount, entryCount)
+
+	// Copy the navigator entries' names and
+	// formatted sizes into the slice we'll return.
+	for i, entry := range navigator.Entries() {
+		viewData[i] = [2]string{entry.Name, view.Size(entry.Size)}
+	}
+
 	return
 }
