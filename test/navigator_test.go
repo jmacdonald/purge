@@ -274,4 +274,24 @@ var _ = Describe("Navigator", func() {
 			})
 		})
 	})
+
+	Describe("View", func() {
+		var result [][2]string
+		var maxRows uint16
+
+		JustBeforeEach(func() {
+			result = navigator.View(maxRows)
+		})
+
+		Context("maxRows is set to 1", func() {
+			BeforeEach(func() {
+				maxRows = 1
+			})
+
+			It("returns a slice with the right number of entries", func() {
+				entryCount := len(navigator.Entries())
+				Expect(len(result)).To(Equal(entryCount))
+			})
+		})
+	})
 })

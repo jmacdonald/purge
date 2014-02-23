@@ -86,3 +86,11 @@ func (navigator *Navigator) ToParentDirectory() error {
 	}
 	return navigator.SetWorkingDirectory(parent_path)
 }
+
+// Generates a two-dimensional slice with all
+// of the data required for display.
+func (navigator *Navigator) View(maxRows uint16) (viewData [][2]string) {
+	entryCount := len(navigator.Entries())
+	viewData = make([][2]string, entryCount, entryCount)
+	return
+}
