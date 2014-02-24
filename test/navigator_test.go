@@ -290,8 +290,7 @@ var _ = Describe("Navigator", func() {
 			})
 
 			It("returns a slice with the right number of entries", func() {
-				entryCount := len(navigator.Entries())
-				Expect(len(result)).To(Equal(entryCount))
+				Expect(len(result)).To(BeEquivalentTo(maxRows))
 			})
 
 			Describe("slice rows", func() {

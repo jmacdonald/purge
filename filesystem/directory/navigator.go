@@ -91,15 +91,21 @@ func (navigator *Navigator) ToParentDirectory() error {
 // Generates a two-dimensional slice with all
 // of the data required for display.
 func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row) {
+	var size uint16
 
-	// Calculate the number of entries and create
-	// a slice with that size and capacity.
+	// Create a slice with a size that is the
+	// lesser of the entry count and maxRows.
 	entryCount := len(navigator.Entries())
-	viewData = make([]view.Row, entryCount, entryCount)
+	if maxRows > uint16(entryCount) {
+		size = uint16(entryCount)
+	} else {
+		size = maxRows
+	}
+	viewData = make([]view.Row, size, size)
 
 	// Copy the navigator entries' names and
 	// formatted sizes into the slice we'll return.
-	for i, entry := range navigator.Entries() {
+	for i, entry := range navigator.Entries()[:size] {
 		highlight := i == int(navigator.SelectedIndex())
 		viewData[i] = view.Row{entry.Name, view.Size(entry.Size), highlight}
 	}
