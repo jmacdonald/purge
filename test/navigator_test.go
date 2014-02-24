@@ -277,7 +277,7 @@ var _ = Describe("Navigator", func() {
 	})
 
 	Describe("View", func() {
-		var result [][2]string
+		var result []view.Row
 		var maxRows uint16
 
 		JustBeforeEach(func() {
@@ -294,14 +294,18 @@ var _ = Describe("Navigator", func() {
 				Expect(len(result)).To(Equal(entryCount))
 			})
 
-			Describe("slice array values", func() {
-				It("has its first value set to the first entry's name", func() {
-					Expect(result[0][0]).To(Equal(navigator.Entries()[0].Name))
+			Describe("slice rows", func() {
+				It("has its left value set to the first entry's name", func() {
+					Expect(result[0].Left).To(Equal(navigator.Entries()[0].Name))
 				})
 
-				It("has its second value set to the first entry's formatted size", func() {
+				It("has its right value set to the first entry's formatted size", func() {
 					formattedSize := view.Size(navigator.Entries()[0].Size)
-					Expect(result[0][1]).To(Equal(formattedSize))
+					Expect(result[0].Right).To(Equal(formattedSize))
+				})
+
+				It("has its highlight value set to the first entry's highlighted status", func() {
+					Expect(result[0].Highlight).To(BeTrue())
 				})
 			})
 		})
