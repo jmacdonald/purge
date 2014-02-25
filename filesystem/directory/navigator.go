@@ -8,9 +8,10 @@ import "github.com/jmacdonald/liberator/view"
 // Structure used to keep state when
 // navigating directories and their entries.
 type Navigator struct {
-	currentPath   string
-	selectedIndex uint16
-	entries       []*Entry
+	currentPath     string
+	selectedIndex   uint16
+	entries         []*Entry
+	viewDataIndices [2]uint16
 }
 
 // NewNavigator constructs a new navigator object.
@@ -34,6 +35,12 @@ func (navigator *Navigator) SelectedIndex() uint16 {
 // not read from disk and may not accurately reflect filesystem contents.
 func (navigator *Navigator) Entries() []*Entry {
 	return navigator.entries
+}
+
+// Returns the last slice indices used by View(). This is only used internally, with the
+// exception of tests, to provide view updates that take previous context into account.
+func (navigator *Navigator) ViewDataIndices() [2]uint16 {
+	return navigator.viewDataIndices
 }
 
 // Sets the navigator's current directory path,
@@ -103,12 +110,20 @@ func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row) {
 	}
 	viewData = make([]view.Row, size, size)
 
-	// Since the selected entry needs to be visible,
-	// find a starting point such that it's included.
-	if navigator.SelectedIndex() >= size {
+	// Determine the range of entries to return.
+	if navigator.viewDataIndices[1] != 0 && navigator.viewDataIndices[0] <= navigator.SelectedIndex() &&
+		navigator.SelectedIndex() <= navigator.viewDataIndices[1] {
+
+		// The selected entry is still visible in the slice last returned. Return
+		// the same range of entries to keep the view as consistent as possible.
+		start, end = navigator.viewDataIndices[0], navigator.viewDataIndices[1]
+	} else if navigator.SelectedIndex() >= size {
+
 		start = navigator.SelectedIndex() + 1 - size
 		end = navigator.SelectedIndex() + 1
 	} else {
+
+		// Use the range starting at index 0.
 		start = 0
 		end = size
 	}
@@ -119,6 +134,9 @@ func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row) {
 		highlight := i == int(navigator.SelectedIndex())
 		viewData[i] = view.Row{entry.Name, view.Size(entry.Size), highlight}
 	}
+
+	// Store the indices used to generate the view data.
+	navigator.viewDataIndices = [2]uint16{start, end}
 
 	return
 }
