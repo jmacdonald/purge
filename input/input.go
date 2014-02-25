@@ -2,8 +2,10 @@
 // and invoking the corresponding navigator actions.
 package input
 
-import "io"
-import "unicode/utf8"
+import (
+	"io"
+	"unicode/utf8"
+)
 
 // Navigator defines the interface expected by the input package,
 // so that navigator actions can be called based on input data.

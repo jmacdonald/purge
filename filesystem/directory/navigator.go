@@ -1,9 +1,11 @@
 package directory
 
-import "os"
-import "errors"
-import "path/filepath"
-import "github.com/jmacdonald/liberator/view"
+import (
+	"errors"
+	"github.com/jmacdonald/liberator/view"
+	"os"
+	"path/filepath"
+)
 
 // Structure used to keep state when
 // navigating directories and their entries.
@@ -96,12 +98,11 @@ func (navigator *Navigator) ToParentDirectory() error {
 	return navigator.SetWorkingDirectory(parent_path)
 }
 
-// Generates a two-dimensional slice with all of the data required for display.
+// Generates a slice of rows with all of the data required for display.
 func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row) {
 	var start, end, size uint16
 
-	// Create a slice with a size that is the
-	// lesser of the entry count and maxRows.
+	// Create a slice with a size that is the lesser of the entry count and maxRows.
 	entryCount := len(navigator.Entries())
 	if maxRows > uint16(entryCount) {
 		size = uint16(entryCount)

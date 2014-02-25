@@ -1,7 +1,7 @@
 package test
 
 import (
-	. "github.com/jmacdonald/liberator/filesystem/directory"
+	"github.com/jmacdonald/liberator/filesystem/directory"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"os"
@@ -15,34 +15,34 @@ var _ = Describe("Directory", func() {
 			const expectedSize int64 = 512020
 
 			dir, _ := os.Getwd()
-			Expect(Size(dir + "/sample")).To(Equal(expectedSize))
+			Expect(directory.Size(dir + "/sample")).To(Equal(expectedSize))
 		})
 	})
 
 	Describe("Entries", func() {
 		It("returns the correct number of entries", func() {
 			dir, _ := os.Getwd()
-			Expect(len(Entries(dir + "/sample"))).To(Equal(3))
+			Expect(len(directory.Entries(dir + "/sample"))).To(Equal(3))
 		})
 
 		It("returns the proper names", func() {
 			dir, _ := os.Getwd()
-			entries := Entries(dir + "/sample")
+			entries := directory.Entries(dir + "/sample")
 			Expect(contains(entries, "directory")).To(BeTrue())
 			Expect(contains(entries, "file")).To(BeTrue())
 		})
 
 		It("returns the proper sizes", func() {
 			dir, _ := os.Getwd()
-			entries := Entries(dir + "/sample")
+			entries := directory.Entries(dir + "/sample")
 			for _, entry := range entries {
-				Expect(entry.Size).To(Equal(Size(dir + "/sample/" + entry.Name)))
+				Expect(entry.Size).To(Equal(directory.Size(dir + "/sample/" + entry.Name)))
 			}
 		})
 	})
 })
 
-func contains(entries []*Entry, value string) bool {
+func contains(entries []*directory.Entry, value string) bool {
 	for _, entry := range entries {
 		if entry.Name == value {
 			return true

@@ -1,7 +1,7 @@
 package test
 
 import (
-	. "github.com/jmacdonald/liberator/view"
+	"github.com/jmacdonald/liberator/view"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -12,7 +12,7 @@ var _ = Describe("Format", func() {
 
 	Describe("Size", func() {
 		JustBeforeEach(func() {
-			output = Size(input)
+			output = view.Size(input)
 		})
 
 		Context("When passed less than a kilobyte", func() {

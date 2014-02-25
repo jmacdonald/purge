@@ -6,8 +6,10 @@ Directory paths are always returned without a trailing slash.
 */
 package directory
 
-import "io/ioutil"
-import "os"
+import (
+	"io/ioutil"
+	"os"
+)
 
 // Structure representing a directory entry.
 type Entry struct {
@@ -40,7 +42,7 @@ func Entries(path string) (entries []*Entry) {
 	entries = make([]*Entry, len(dirEntries))
 
 	for index, entry := range dirEntries {
-		entries[index] = &Entry{ Name: entry.Name(), Size: Size(path + "/" + entry.Name()) }
+		entries[index] = &Entry{Name: entry.Name(), Size: Size(path + "/" + entry.Name())}
 	}
 	return
 }
