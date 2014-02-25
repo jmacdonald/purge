@@ -58,6 +58,13 @@ var _ = Describe("Navigator", func() {
 				navigator.SetWorkingDirectory(path)
 				Expect(navigator.SelectedIndex()).To(BeZero())
 			})
+
+			It("resets previous view data indices", func() {
+				_ = navigator.View(1)
+
+				navigator.SetWorkingDirectory(path)
+				Expect(navigator.ViewDataIndices()).To(Equal([2]uint16{0, 0}))
+			})
 		})
 
 		Context("path is a file", func() {

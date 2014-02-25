@@ -57,6 +57,7 @@ func (navigator *Navigator) SetWorkingDirectory(path string) (error error) {
 		navigator.currentPath = path
 		navigator.entries = Entries(path)
 		navigator.selectedIndex = 0
+		navigator.viewDataIndices = [2]uint16{0, 0}
 	} else if error == nil {
 		error = errors.New("path is not a directory")
 	}
