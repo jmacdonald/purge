@@ -91,7 +91,7 @@ func (navigator *Navigator) ToParentDirectory() error {
 // Generates a two-dimensional slice with all
 // of the data required for display.
 func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row) {
-	var size uint16
+	var start, end, size uint16
 
 	// Create a slice with a size that is the
 	// lesser of the entry count and maxRows.
@@ -103,9 +103,19 @@ func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row) {
 	}
 	viewData = make([]view.Row, size, size)
 
+	// Since the selected entry needs to be visible,
+	// find a starting point such that it's included.
+	if navigator.SelectedIndex() >= size {
+		start = navigator.SelectedIndex() + 1 - size
+		end = navigator.SelectedIndex() + 1
+	} else {
+		start = 0
+		end = size
+	}
+
 	// Copy the navigator entries' names and
 	// formatted sizes into the slice we'll return.
-	for i, entry := range navigator.Entries()[:size] {
+	for i, entry := range navigator.Entries()[start:end] {
 		highlight := i == int(navigator.SelectedIndex())
 		viewData[i] = view.Row{entry.Name, view.Size(entry.Size), highlight}
 	}

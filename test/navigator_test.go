@@ -293,7 +293,7 @@ var _ = Describe("Navigator", func() {
 				Expect(len(result)).To(BeEquivalentTo(maxRows))
 			})
 
-			Describe("slice rows", func() {
+			Describe("returned row", func() {
 				It("has its left value set to the first entry's name", func() {
 					Expect(result[0].Left).To(Equal(navigator.Entries()[0].Name))
 				})
@@ -305,6 +305,52 @@ var _ = Describe("Navigator", func() {
 
 				It("has its highlight value set to the first entry's highlighted status", func() {
 					Expect(result[0].Highlight).To(BeTrue())
+				})
+			})
+		})
+
+		Context("maxRows is set to 2", func() {
+			BeforeEach(func() {
+				maxRows = 2
+			})
+
+			It("returns a slice with the right number of entries", func() {
+				Expect(len(result)).To(BeEquivalentTo(maxRows))
+			})
+
+			Context("selected entry has never been changed", func() {
+				It("returns the first and second rows", func() {
+					Expect(result[0].Left).To(Equal(navigator.Entries()[0].Name))
+					Expect(result[1].Left).To(Equal(navigator.Entries()[1].Name))
+				})
+			})
+
+			Context("the second entry is selected", func() {
+				BeforeEach(func() {
+					navigator.SelectNextEntry()
+				})
+
+				It("returns the first row", func() {
+					Expect(result[0].Left).To(Equal(navigator.Entries()[0].Name))
+				})
+
+				It("returns the second row", func() {
+					Expect(result[1].Left).To(Equal(navigator.Entries()[1].Name))
+				})
+			})
+
+			Context("the third entry is selected", func() {
+				BeforeEach(func() {
+					navigator.SelectNextEntry()
+					navigator.SelectNextEntry()
+				})
+
+				It("returns the second row", func() {
+					Expect(result[0].Left).To(Equal(navigator.Entries()[1].Name))
+				})
+
+				It("returns the third row", func() {
+					Expect(result[1].Left).To(Equal(navigator.Entries()[2].Name))
 				})
 			})
 		})
