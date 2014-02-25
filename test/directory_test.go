@@ -22,7 +22,7 @@ var _ = Describe("Directory", func() {
 	Describe("Entries", func() {
 		It("returns the correct number of entries", func() {
 			dir, _ := os.Getwd()
-			Expect(len(Entries(dir + "/sample"))).To(Equal(2))
+			Expect(len(Entries(dir + "/sample"))).To(Equal(3))
 		})
 
 		It("returns the proper names", func() {
