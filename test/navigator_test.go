@@ -385,6 +385,25 @@ var _ = Describe("Navigator", func() {
 					Expect(result[1].Left).To(Equal(navigator.Entries()[2].Name))
 				})
 			})
+
+			Context("the fourth entry is selected, the view is rendered, and then the second entry is selected", func() {
+				BeforeEach(func() {
+					navigator.SelectNextEntry()
+					navigator.SelectNextEntry()
+					navigator.SelectNextEntry()
+					_ = navigator.View(maxRows)
+					navigator.SelectPreviousEntry()
+					navigator.SelectPreviousEntry()
+				})
+
+				It("returns the second row", func() {
+					Expect(result[0].Left).To(Equal(navigator.Entries()[1].Name))
+				})
+
+				It("returns the third row", func() {
+					Expect(result[1].Left).To(Equal(navigator.Entries()[2].Name))
+				})
+			})
 		})
 	})
 })

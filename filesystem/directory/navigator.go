@@ -96,8 +96,7 @@ func (navigator *Navigator) ToParentDirectory() error {
 	return navigator.SetWorkingDirectory(parent_path)
 }
 
-// Generates a two-dimensional slice with all
-// of the data required for display.
+// Generates a two-dimensional slice with all of the data required for display.
 func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row) {
 	var start, end, size uint16
 
@@ -118,12 +117,23 @@ func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row) {
 		// The selected entry is still visible in the slice last returned. Return
 		// the same range of entries to keep the view as consistent as possible.
 		start, end = navigator.viewDataIndices[0], navigator.viewDataIndices[1]
-	} else if navigator.SelectedIndex() >= size {
 
+	} else if navigator.viewDataIndices[1] != 0 && navigator.SelectedIndex() < navigator.viewDataIndices[0] {
+
+		// The selected entry is beneath the range of entries previously returned.
+		// Shift the range down just enough to include the selected entry.
+		start = navigator.SelectedIndex()
+		end = navigator.SelectedIndex() + size
+
+	} else if navigator.SelectedIndex() >= size {
+		// The selected entry is either above the previously returned range, or
+		// this function hasn't been called for the current directory yet. Either way,
+		// it would be outside of the returned range if we started at zero, so return
+		// a range with it at the top.
 		start = navigator.SelectedIndex() + 1 - size
 		end = navigator.SelectedIndex() + 1
-	} else {
 
+	} else {
 		// Use the range starting at index 0.
 		start = 0
 		end = size
