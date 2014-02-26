@@ -4,6 +4,8 @@ data formatting and display updates (using termbox).
 */
 package view
 
+import "github.com/nsf/termbox-go"
+
 type Viewer interface {
 	View(maxRows uint16) []Row
 }
