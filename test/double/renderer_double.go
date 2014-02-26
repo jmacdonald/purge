@@ -19,7 +19,7 @@ func (r *Renderer) Clear() {
 }
 
 func (renderer *Renderer) Size() (int, int) {
-	return 80, 80
+	return 15, 15
 }
 
 func (r *Renderer) SetCell(x, y int, value rune, fg, bg termbox.Attribute) {
