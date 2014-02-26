@@ -34,4 +34,6 @@ type Row struct {
 }
 
 func Render(data Viewer, output Renderer) {
+	output.Clear()
+	output.Flush()
 }
