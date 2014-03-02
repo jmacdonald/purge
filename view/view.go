@@ -34,6 +34,12 @@ Viewer interface to the terminal using termbox.
 func Render(source Viewer) {
 	width, _ := termbox.Size()
 
+	// Clear the screen so that we can render new content to it.
+	err := termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
+	if err != nil {
+		return
+	}
+
 	// Step through the data one row at a time.
 	for row, rowData := range source.View(uint16(width)) {
 
@@ -49,6 +55,9 @@ func Render(source Viewer) {
 			}
 		}
 	}
+
+	// Draw new content to the screen.
+	termbox.Flush()
 }
 
 /*
