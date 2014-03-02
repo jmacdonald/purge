@@ -32,14 +32,14 @@ Render a data source that implements the
 Viewer interface to the terminal using termbox.
 */
 func Render(source Viewer) {
-	x, y := termbox.Size()
+	width, _ := termbox.Size()
 
 	// Step through the data one row at a time.
-	for row, dataRow := range source.View() {
+	for row, rowData := range source.View(uint16(width)) {
 
 		// Format the row such that it fills the screen,
 		// and properly aligns the left/right columns.
-		formattedRow, err := FormatRow(row, x)
+		formattedRow, err := FormatRow(rowData, width)
 
 		if err == nil {
 			// Step through the formatted row one rune at a time,
