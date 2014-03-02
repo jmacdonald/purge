@@ -42,7 +42,6 @@ func Render(source Viewer) {
 
 	// Step through the data one row at a time.
 	for row, rowData := range source.View(uint16(width)) {
-
 		// Format the row such that it fills the screen,
 		// and properly aligns the left/right columns.
 		formattedRow, err := FormatRow(rowData, width)
@@ -50,8 +49,10 @@ func Render(source Viewer) {
 		if err == nil {
 			// Step through the formatted row one rune at a time,
 			// printing the rune to the screen at the correct coordinates.
-			for column, character := range formattedRow {
+			column := 0
+			for _, character := range formattedRow {
 				termbox.SetCell(row, column, character, termbox.ColorWhite, termbox.ColorBlack)
+				column++
 			}
 		}
 	}
