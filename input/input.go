@@ -30,7 +30,8 @@ func Read(source io.Reader) (value rune) {
 }
 
 // Maps characters to their corresponding navigator actions.
-func Map(character rune, navigator Navigator) {
+// This function will return true if the input is an exit request.
+func Map(character rune, navigator Navigator) bool {
 	switch character {
 	case 'j':
 		navigator.SelectNextEntry()
@@ -40,5 +41,8 @@ func Map(character rune, navigator Navigator) {
 		navigator.IntoSelectedEntry()
 	case 'h':
 		navigator.ToParentDirectory()
+	case 'q':
+		return true
 	}
+	return false
 }

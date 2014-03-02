@@ -30,10 +30,11 @@ var _ = Describe("Input", func() {
 	Describe("Map", func() {
 		var character rune
 		var navigator *double.Navigator
+		var result bool
 
 		JustBeforeEach(func() {
 			navigator = new(double.Navigator)
-			input.Map(character, navigator)
+			result = input.Map(character, navigator)
 		})
 
 		Context("input is a 'j'", func() {
@@ -73,6 +74,16 @@ var _ = Describe("Input", func() {
 
 			It("calls ToParentDirectory() on navigator", func() {
 				Expect(navigator.ToParentDirectoryCalled).To(BeTrue())
+			})
+		})
+
+		Context("input is a 'q'", func() {
+			BeforeEach(func() {
+				character = 'q'
+			})
+
+			It("returns true", func() {
+				Expect(result).To(BeTrue())
 			})
 		})
 	})
