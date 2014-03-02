@@ -28,6 +28,30 @@ type Row struct {
 }
 
 /*
+Render a data source that implements the
+Viewer interface to the terminal using termbox.
+*/
+func Render(source Viewer) {
+	x, y := termbox.Size()
+
+	// Step through the data one row at a time.
+	for row, dataRow := range source.View() {
+
+		// Format the row such that it fills the screen,
+		// and properly aligns the left/right columns.
+		formattedRow, err := FormatRow(row, x)
+
+		if err == nil {
+			// Step through the formatted row one rune at a time,
+			// printing the rune to the screen at the correct coordinates.
+			for column, character := range formattedRow {
+				termbox.SetCell(row, column, character, termbox.ColorWhite, termbox.ColorBlack)
+			}
+		}
+	}
+}
+
+/*
 FormatRow returns a string with the row's left/right
 elements placed at the far left/right with spaces in between.
 */
