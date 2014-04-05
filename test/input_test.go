@@ -59,7 +59,7 @@ var _ = Describe("Input", func() {
 
 		Context("input is a carriage return", func() {
 			BeforeEach(func() {
-				character = '\n'
+				character = '\r'
 			})
 
 			It("calls IntoSelectedEntry() on navigator", func() {
