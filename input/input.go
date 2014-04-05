@@ -37,7 +37,7 @@ func Map(character rune, navigator Navigator) bool {
 		navigator.SelectNextEntry()
 	case 'k':
 		navigator.SelectPreviousEntry()
-	case '\n':
+	case '\r':
 		navigator.IntoSelectedEntry()
 	case 'h':
 		navigator.ToParentDirectory()
