@@ -23,6 +23,9 @@ func main() {
 	}
 	defer termbox.Close()
 
+	// Do an initial render.
+	view.Render(nav)
+
 	// main application loop
 	for {
 		// Read a character from STDIN.
@@ -34,7 +37,7 @@ func main() {
 			break
 		}
 
-		// Refresh the view.
+		// Render the updated state.
 		view.Render(nav)
 	}
 }
