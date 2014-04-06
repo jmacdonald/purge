@@ -317,6 +317,36 @@ var _ = Describe("Navigator", func() {
 				It("has its highlight value set to the first entry's highlighted status", func() {
 					Expect(result[0].Highlight).To(BeTrue())
 				})
+
+				Context("selected entry is a directory", func() {
+					BeforeEach(func() {
+						entry := navigator.Entries()[navigator.SelectedIndex()]
+
+						for !entry.IsDirectory {
+							navigator.SelectNextEntry()
+							entry = navigator.Entries()[navigator.SelectedIndex()]
+						}
+					})
+
+					It("has its colour value set to true", func() {
+						Expect(result[0].Coloured).To(BeTrue())
+					})
+				})
+
+				Context("selected entry is not a directory", func() {
+					BeforeEach(func() {
+						entry := navigator.Entries()[navigator.SelectedIndex()]
+
+						for entry.IsDirectory {
+							navigator.SelectNextEntry()
+							entry = navigator.Entries()[navigator.SelectedIndex()]
+						}
+					})
+
+					It("has its colour value set to false", func() {
+						Expect(result[0].Coloured).To(BeFalse())
+					})
+				})
 			})
 		})
 

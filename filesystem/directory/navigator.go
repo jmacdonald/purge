@@ -144,7 +144,7 @@ func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row) {
 	// formatted sizes into the slice we'll return.
 	for i, entry := range navigator.Entries()[start:end] {
 		highlight := i == int(navigator.SelectedIndex())
-		viewData[i] = view.Row{entry.Name, view.Size(entry.Size), highlight}
+		viewData[i] = view.Row{entry.Name, view.Size(entry.Size), highlight, entry.IsDirectory}
 	}
 
 	// Store the indices used to generate the view data.
