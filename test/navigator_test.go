@@ -331,6 +331,10 @@ var _ = Describe("Navigator", func() {
 					It("has its colour value set to true", func() {
 						Expect(result[0].Colour).To(BeTrue())
 					})
+
+					It("has a forward slash appended to its name", func() {
+						Expect(result[0].Left).To(Equal(navigator.Entries()[navigator.SelectedIndex()].Name + "/"))
+					})
 				})
 
 				Context("selected entry is not a directory", func() {
@@ -365,8 +369,8 @@ var _ = Describe("Navigator", func() {
 
 			Context("selected entry has never been changed", func() {
 				It("returns the first and second rows", func() {
-					Expect(result[0].Left).To(Equal(navigator.Entries()[0].Name))
-					Expect(result[1].Left).To(Equal(navigator.Entries()[1].Name))
+					Expect(result[0].Left).To(ContainSubstring(navigator.Entries()[0].Name))
+					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[1].Name))
 				})
 			})
 
@@ -376,11 +380,11 @@ var _ = Describe("Navigator", func() {
 				})
 
 				It("returns the first row", func() {
-					Expect(result[0].Left).To(Equal(navigator.Entries()[0].Name))
+					Expect(result[0].Left).To(ContainSubstring(navigator.Entries()[0].Name))
 				})
 
 				It("returns the second row", func() {
-					Expect(result[1].Left).To(Equal(navigator.Entries()[1].Name))
+					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[1].Name))
 				})
 			})
 
@@ -391,11 +395,11 @@ var _ = Describe("Navigator", func() {
 				})
 
 				It("returns the second row", func() {
-					Expect(result[0].Left).To(Equal(navigator.Entries()[1].Name))
+					Expect(result[0].Left).To(ContainSubstring(navigator.Entries()[1].Name))
 				})
 
 				It("returns the third row", func() {
-					Expect(result[1].Left).To(Equal(navigator.Entries()[2].Name))
+					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[2].Name))
 				})
 			})
 
@@ -408,11 +412,11 @@ var _ = Describe("Navigator", func() {
 				})
 
 				It("returns the second row", func() {
-					Expect(result[0].Left).To(Equal(navigator.Entries()[1].Name))
+					Expect(result[0].Left).To(ContainSubstring(navigator.Entries()[1].Name))
 				})
 
 				It("returns the third row", func() {
-					Expect(result[1].Left).To(Equal(navigator.Entries()[2].Name))
+					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[2].Name))
 				})
 			})
 
@@ -427,11 +431,11 @@ var _ = Describe("Navigator", func() {
 				})
 
 				It("returns the second row", func() {
-					Expect(result[0].Left).To(Equal(navigator.Entries()[1].Name))
+					Expect(result[0].Left).To(ContainSubstring(navigator.Entries()[1].Name))
 				})
 
 				It("returns the third row", func() {
-					Expect(result[1].Left).To(Equal(navigator.Entries()[2].Name))
+					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[2].Name))
 				})
 			})
 		})
