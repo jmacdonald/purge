@@ -39,6 +39,15 @@ var _ = Describe("Directory", func() {
 				Expect(entry.Size).To(Equal(directory.Size(dir + "/sample/" + entry.Name)))
 			}
 		})
+
+		It("returns the proper directory statuses", func() {
+			dir, _ := os.Getwd()
+			entries := directory.Entries(dir + "/sample")
+			for _, entry := range entries {
+				fileInfo, _ := os.Stat(dir + "/sample/" + entry.Name)
+				Expect(entry.IsDirectory).To(Equal(fileInfo.IsDir()))
+			}
+		})
 	})
 })
 

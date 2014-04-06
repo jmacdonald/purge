@@ -13,8 +13,9 @@ import (
 
 // Structure representing a directory entry.
 type Entry struct {
-	Name string
-	Size int64
+	Name        string
+	Size        int64
+	IsDirectory bool
 }
 
 // Calculates and returns the size (in
@@ -42,7 +43,8 @@ func Entries(path string) (entries []*Entry) {
 	entries = make([]*Entry, len(dirEntries))
 
 	for index, entry := range dirEntries {
-		entries[index] = &Entry{Name: entry.Name(), Size: Size(path + "/" + entry.Name())}
+		fileInfo, _ := os.Stat(path + "/" + entry.Name())
+		entries[index] = &Entry{Name: entry.Name(), Size: Size(path + "/" + entry.Name()), IsDirectory: fileInfo.IsDir()}
 	}
 	return
 }
