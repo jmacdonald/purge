@@ -36,7 +36,13 @@ var _ = Describe("Directory", func() {
 			dir, _ := os.Getwd()
 			entries := directory.Entries(dir + "/sample")
 			for _, entry := range entries {
-				Expect(entry.Size).To(Equal(directory.Size(dir + "/sample/" + entry.Name)))
+				entryInfo, _ := os.Stat(dir + "/sample/" + entry.Name)
+
+				if entryInfo.IsDir() {
+					Expect(entry.Size).To(Equal(directory.Size(dir + "/sample/" + entry.Name)))
+				} else {
+					Expect(entry.Size).To(Equal(entryInfo.Size()))
+				}
 			}
 		})
 

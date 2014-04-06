@@ -38,13 +38,24 @@ func Size(path string) (size int64) {
 // Returns a list of entries (and their sizes) for the given
 // path. The current and parent (./..) entries are not included.
 func Entries(path string) (entries []*Entry) {
+	var size int64
+
 	// Read the directory entries.
 	dirEntries, _ := ioutil.ReadDir(path)
 	entries = make([]*Entry, len(dirEntries))
 
 	for index, entry := range dirEntries {
-		fileInfo, _ := os.Stat(path + "/" + entry.Name())
-		entries[index] = &Entry{Name: entry.Name(), Size: Size(path + "/" + entry.Name()), IsDirectory: fileInfo.IsDir()}
+		entryInfo, _ := os.Stat(path + "/" + entry.Name())
+
+		// Figure out the entry's size differently
+		// depending on whether or not it's a directory.
+		if entryInfo.IsDir() {
+			size = Size(path + "/" + entry.Name())
+		} else {
+			size = entryInfo.Size()
+		}
+
+		entries[index] = &Entry{Name: entry.Name(), Size: size, IsDirectory: entryInfo.IsDir()}
 	}
 	return
 }
