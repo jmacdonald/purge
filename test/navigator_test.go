@@ -329,7 +329,7 @@ var _ = Describe("Navigator", func() {
 					})
 
 					It("has its colour value set to true", func() {
-						Expect(result[0].Coloured).To(BeTrue())
+						Expect(result[0].Colour).To(BeTrue())
 					})
 				})
 
@@ -344,7 +344,7 @@ var _ = Describe("Navigator", func() {
 					})
 
 					It("has its colour value set to false", func() {
-						Expect(result[0].Coloured).To(BeFalse())
+						Expect(result[0].Colour).To(BeFalse())
 					})
 				})
 			})

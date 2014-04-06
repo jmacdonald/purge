@@ -25,7 +25,7 @@ type Row struct {
 	Left      string
 	Right     string
 	Highlight bool
-	Coloured  bool
+	Colour    bool
 }
 
 /*
