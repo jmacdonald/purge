@@ -52,11 +52,17 @@ func Render(source Viewer) {
 			// printing the rune to the screen at the correct coordinates.
 			column := 0
 			for _, character := range formattedRow {
+				fgColour := termbox.ColorWhite
+				bgColour := termbox.ColorBlack
+
 				if rowData.Highlight {
-					termbox.SetCell(column, row, character, termbox.ColorBlack, termbox.ColorWhite)
-				} else {
-					termbox.SetCell(column, row, character, termbox.ColorWhite, termbox.ColorBlack)
+					fgColour, bgColour = bgColour, fgColour
 				}
+				if rowData.Colour {
+					fgColour = termbox.ColorYellow
+				}
+
+				termbox.SetCell(column, row, character, fgColour, bgColour)
 				column++
 			}
 		}
