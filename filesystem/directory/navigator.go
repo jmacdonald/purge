@@ -113,7 +113,7 @@ func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row) {
 
 	// Determine the range of entries to return.
 	if navigator.viewDataIndices[1] != 0 && navigator.viewDataIndices[0] <= navigator.SelectedIndex() &&
-		navigator.SelectedIndex() <= navigator.viewDataIndices[1] {
+		navigator.SelectedIndex() < navigator.viewDataIndices[1] {
 
 		// The selected entry is still visible in the slice last returned. Return
 		// the same range of entries to keep the view as consistent as possible.

@@ -396,9 +396,10 @@ var _ = Describe("Navigator", func() {
 				})
 			})
 
-			Context("the third entry is selected", func() {
+			Context("the second entry is selected, the view is rendered, and then the third entry is selected", func() {
 				BeforeEach(func() {
 					navigator.SelectNextEntry()
+					_ = navigator.View(maxRows)
 					navigator.SelectNextEntry()
 				})
 
