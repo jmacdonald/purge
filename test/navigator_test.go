@@ -372,6 +372,10 @@ var _ = Describe("Navigator", func() {
 					Expect(result[0].Left).To(ContainSubstring(navigator.Entries()[0].Name))
 					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[1].Name))
 				})
+
+				It("sets the first row as highlighted", func() {
+					Expect(result[0].Highlight).To(BeTrue())
+				})
 			})
 
 			Context("the second entry is selected", func() {
@@ -385,6 +389,10 @@ var _ = Describe("Navigator", func() {
 
 				It("returns the second row", func() {
 					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[1].Name))
+				})
+
+				It("sets the second row as highlighted", func() {
+					Expect(result[1].Highlight).To(BeTrue())
 				})
 			})
 
@@ -400,6 +408,10 @@ var _ = Describe("Navigator", func() {
 
 				It("returns the third row", func() {
 					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[2].Name))
+				})
+
+				It("sets the third row as highlighted", func() {
+					Expect(result[1].Highlight).To(BeTrue())
 				})
 			})
 
@@ -417,6 +429,10 @@ var _ = Describe("Navigator", func() {
 
 				It("returns the third row", func() {
 					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[2].Name))
+				})
+
+				It("sets the second row as highlighted", func() {
+					Expect(result[0].Highlight).To(BeTrue())
 				})
 			})
 
@@ -436,6 +452,10 @@ var _ = Describe("Navigator", func() {
 
 				It("returns the third row", func() {
 					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[2].Name))
+				})
+
+				It("sets the second row as highlighted", func() {
+					Expect(result[0].Highlight).To(BeTrue())
 				})
 			})
 		})

@@ -143,7 +143,7 @@ func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row) {
 	// Copy the navigator entries' names and
 	// formatted sizes into the slice we'll return.
 	for i, entry := range navigator.Entries()[start:end] {
-		highlight := i == int(navigator.SelectedIndex())
+		highlight := i+int(start) == int(navigator.SelectedIndex())
 
 		// Add a trailing slash to the name
 		// if the entry is a directory.
