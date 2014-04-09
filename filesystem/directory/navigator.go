@@ -99,7 +99,7 @@ func (navigator *Navigator) ToParentDirectory() error {
 }
 
 // Generates a slice of rows with all of the data required for display.
-func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row) {
+func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row, status string) {
 	var start, end, size uint16
 
 	// Create a slice with a size that is the lesser of the entry count and maxRows.
@@ -159,6 +159,9 @@ func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row) {
 
 	// Store the indices used to generate the view data.
 	navigator.viewDataIndices = [2]uint16{start, end}
+
+	// Return the current directory path as the status.
+	status = navigator.CurrentPath()
 
 	return
 }

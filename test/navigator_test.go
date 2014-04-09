@@ -60,7 +60,7 @@ var _ = Describe("Navigator", func() {
 			})
 
 			It("resets previous view data indices", func() {
-				_ = navigator.View(1)
+				_, _ = navigator.View(1)
 
 				navigator.SetWorkingDirectory(path)
 				Expect(navigator.ViewDataIndices()).To(Equal([2]uint16{0, 0}))
@@ -284,11 +284,16 @@ var _ = Describe("Navigator", func() {
 	})
 
 	Describe("View", func() {
-		var result []view.Row
+		var rows []view.Row
+		var status string
 		var maxRows uint16
 
 		JustBeforeEach(func() {
-			result = navigator.View(maxRows)
+			rows, status = navigator.View(maxRows)
+		})
+
+		It("returns the current directory path as its status", func() {
+			Expect(status).To(Equal(navigator.CurrentPath()))
 		})
 
 		Context("maxRows is set to 1", func() {
@@ -297,7 +302,7 @@ var _ = Describe("Navigator", func() {
 			})
 
 			It("returns a slice with the right number of entries", func() {
-				Expect(len(result)).To(BeEquivalentTo(maxRows))
+				Expect(len(rows)).To(BeEquivalentTo(maxRows))
 			})
 
 			It("stores the proper view data indices", func() {
@@ -306,16 +311,16 @@ var _ = Describe("Navigator", func() {
 
 			Describe("returned row", func() {
 				It("has its left value set to the first entry's name", func() {
-					Expect(result[0].Left).To(Equal(navigator.Entries()[0].Name))
+					Expect(rows[0].Left).To(Equal(navigator.Entries()[0].Name))
 				})
 
 				It("has its right value set to the first entry's formatted size", func() {
 					formattedSize := view.Size(navigator.Entries()[0].Size)
-					Expect(result[0].Right).To(Equal(formattedSize))
+					Expect(rows[0].Right).To(Equal(formattedSize))
 				})
 
 				It("has its highlight value set to the first entry's highlighted status", func() {
-					Expect(result[0].Highlight).To(BeTrue())
+					Expect(rows[0].Highlight).To(BeTrue())
 				})
 
 				Context("selected entry is a directory", func() {
@@ -329,11 +334,11 @@ var _ = Describe("Navigator", func() {
 					})
 
 					It("has its colour value set to true", func() {
-						Expect(result[0].Colour).To(BeTrue())
+						Expect(rows[0].Colour).To(BeTrue())
 					})
 
 					It("has a forward slash appended to its name", func() {
-						Expect(result[0].Left).To(Equal(navigator.Entries()[navigator.SelectedIndex()].Name + "/"))
+						Expect(rows[0].Left).To(Equal(navigator.Entries()[navigator.SelectedIndex()].Name + "/"))
 					})
 				})
 
@@ -348,7 +353,7 @@ var _ = Describe("Navigator", func() {
 					})
 
 					It("has its colour value set to false", func() {
-						Expect(result[0].Colour).To(BeFalse())
+						Expect(rows[0].Colour).To(BeFalse())
 					})
 				})
 			})
@@ -360,7 +365,7 @@ var _ = Describe("Navigator", func() {
 			})
 
 			It("returns a slice with the right number of entries", func() {
-				Expect(len(result)).To(BeEquivalentTo(maxRows))
+				Expect(len(rows)).To(BeEquivalentTo(maxRows))
 			})
 
 			It("stores the proper view data indices", func() {
@@ -369,12 +374,12 @@ var _ = Describe("Navigator", func() {
 
 			Context("selected entry has never been changed", func() {
 				It("returns the first and second rows", func() {
-					Expect(result[0].Left).To(ContainSubstring(navigator.Entries()[0].Name))
-					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[1].Name))
+					Expect(rows[0].Left).To(ContainSubstring(navigator.Entries()[0].Name))
+					Expect(rows[1].Left).To(ContainSubstring(navigator.Entries()[1].Name))
 				})
 
 				It("sets the first row as highlighted", func() {
-					Expect(result[0].Highlight).To(BeTrue())
+					Expect(rows[0].Highlight).To(BeTrue())
 				})
 			})
 
@@ -384,35 +389,35 @@ var _ = Describe("Navigator", func() {
 				})
 
 				It("returns the first row", func() {
-					Expect(result[0].Left).To(ContainSubstring(navigator.Entries()[0].Name))
+					Expect(rows[0].Left).To(ContainSubstring(navigator.Entries()[0].Name))
 				})
 
 				It("returns the second row", func() {
-					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[1].Name))
+					Expect(rows[1].Left).To(ContainSubstring(navigator.Entries()[1].Name))
 				})
 
 				It("sets the second row as highlighted", func() {
-					Expect(result[1].Highlight).To(BeTrue())
+					Expect(rows[1].Highlight).To(BeTrue())
 				})
 			})
 
 			Context("the second entry is selected, the view is rendered, and then the third entry is selected", func() {
 				BeforeEach(func() {
 					navigator.SelectNextEntry()
-					_ = navigator.View(maxRows)
+					_, _ = navigator.View(maxRows)
 					navigator.SelectNextEntry()
 				})
 
 				It("returns the second row", func() {
-					Expect(result[0].Left).To(ContainSubstring(navigator.Entries()[1].Name))
+					Expect(rows[0].Left).To(ContainSubstring(navigator.Entries()[1].Name))
 				})
 
 				It("returns the third row", func() {
-					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[2].Name))
+					Expect(rows[1].Left).To(ContainSubstring(navigator.Entries()[2].Name))
 				})
 
 				It("sets the third row as highlighted", func() {
-					Expect(result[1].Highlight).To(BeTrue())
+					Expect(rows[1].Highlight).To(BeTrue())
 				})
 			})
 
@@ -420,20 +425,20 @@ var _ = Describe("Navigator", func() {
 				BeforeEach(func() {
 					navigator.SelectNextEntry()
 					navigator.SelectNextEntry()
-					_ = navigator.View(maxRows)
+					_, _ = navigator.View(maxRows)
 					navigator.SelectPreviousEntry()
 				})
 
 				It("returns the second row", func() {
-					Expect(result[0].Left).To(ContainSubstring(navigator.Entries()[1].Name))
+					Expect(rows[0].Left).To(ContainSubstring(navigator.Entries()[1].Name))
 				})
 
 				It("returns the third row", func() {
-					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[2].Name))
+					Expect(rows[1].Left).To(ContainSubstring(navigator.Entries()[2].Name))
 				})
 
 				It("sets the second row as highlighted", func() {
-					Expect(result[0].Highlight).To(BeTrue())
+					Expect(rows[0].Highlight).To(BeTrue())
 				})
 			})
 
@@ -442,21 +447,21 @@ var _ = Describe("Navigator", func() {
 					navigator.SelectNextEntry()
 					navigator.SelectNextEntry()
 					navigator.SelectNextEntry()
-					_ = navigator.View(maxRows)
+					_, _ = navigator.View(maxRows)
 					navigator.SelectPreviousEntry()
 					navigator.SelectPreviousEntry()
 				})
 
 				It("returns the second row", func() {
-					Expect(result[0].Left).To(ContainSubstring(navigator.Entries()[1].Name))
+					Expect(rows[0].Left).To(ContainSubstring(navigator.Entries()[1].Name))
 				})
 
 				It("returns the third row", func() {
-					Expect(result[1].Left).To(ContainSubstring(navigator.Entries()[2].Name))
+					Expect(rows[1].Left).To(ContainSubstring(navigator.Entries()[2].Name))
 				})
 
 				It("sets the second row as highlighted", func() {
-					Expect(result[0].Highlight).To(BeTrue())
+					Expect(rows[0].Highlight).To(BeTrue())
 				})
 			})
 		})
