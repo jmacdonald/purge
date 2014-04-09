@@ -6,13 +6,14 @@ package view
 
 import "fmt"
 import "github.com/nsf/termbox-go"
+import "unicode/utf8"
 
 /*
 Viewer is an interface used by Render to standardize data
 from a data source such that it can be displayed properly.
 */
 type Viewer interface {
-	View(maxRows uint16) []Row
+	View(maxRows uint16) ([]Row, string)
 }
 
 /*
@@ -35,6 +36,11 @@ Viewer interface to the terminal using termbox.
 func Render(source Viewer) {
 	width, height := termbox.Size()
 
+	// Request the view data with a row maximum that's
+	// one row smaller than the screen height, so that
+	// we can render a status bar.
+	rows, status := source.View(uint16(height - 1))
+
 	// Clear the screen so that we can render new content to it.
 	err := termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
 	if err != nil {
@@ -42,7 +48,7 @@ func Render(source Viewer) {
 	}
 
 	// Step through the data one row at a time.
-	for row, rowData := range source.View(uint16(height)) {
+	for row, rowData := range rows {
 		// Format the row such that it fills the screen,
 		// and properly aligns the left/right columns.
 		formattedRow, err := FormatRow(rowData, width)
@@ -66,6 +72,27 @@ func Render(source Viewer) {
 				column++
 			}
 		}
+	}
+
+	// Print the status to the bottom of the screen by stepping
+	// through the bottom row one cell at a time and printing
+	// a character from the status message, or a blank space,
+	// until all of the row has been filled.
+	for column, offset := 0, 0; column < width; column++ {
+		var character rune
+		var size int
+
+		// Decode the next rune and advance the offset by its length,
+		// or if we've already read the entire string, use a space instead.
+		if offset < len(status) {
+			character, size = utf8.DecodeRune([]byte(status)[offset:])
+			offset += size
+		} else {
+			character = ' '
+		}
+
+		// Print the character to the screen in a highlighted colour.
+		termbox.SetCell(column, height-1, character, termbox.ColorBlack, termbox.ColorWhite)
 	}
 
 	// Draw new content to the screen.
