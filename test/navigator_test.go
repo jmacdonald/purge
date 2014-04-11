@@ -465,5 +465,33 @@ var _ = Describe("Navigator", func() {
 				})
 			})
 		})
+
+		Context("in an empty directory", func() {
+			var emptyDirectoryPath string
+
+			BeforeEach(func() {
+				// Create an empty directory.
+				path, _ = os.Getwd()
+				fileInfo, _ := os.Stat(path + "/sample/")
+				emptyDirectoryPath = path + "/sample/empty"
+				_ = os.Mkdir(emptyDirectoryPath, fileInfo.Mode())
+
+				// Navigate into the empty directory.
+				navigator.SetWorkingDirectory(emptyDirectoryPath)
+			})
+
+			AfterEach(func() {
+				os.Remove(emptyDirectoryPath)
+			})
+
+			It("does not panic", func() {
+				Expect(func() { navigator.View(1) }).ToNot(Panic())
+			})
+
+			It("returns an empty slice of rows", func() {
+				slice, _ := navigator.View(1)
+				Expect(len(slice)).To(BeZero())
+			})
+		})
 	})
 })

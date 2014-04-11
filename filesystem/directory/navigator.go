@@ -102,6 +102,9 @@ func (navigator *Navigator) ToParentDirectory() error {
 func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row, status string) {
 	var start, end, size uint16
 
+	// Return the current directory path as the status.
+	status = navigator.CurrentPath()
+
 	// Create a slice with a size that is the lesser of the entry count and maxRows.
 	entryCount := len(navigator.Entries())
 	if maxRows > uint16(entryCount) {
@@ -110,6 +113,11 @@ func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row, status st
 		size = maxRows
 	}
 	viewData = make([]view.Row, size, size)
+
+	// Don't bother going any further if there are no entries to work with.
+	if size == 0 {
+		return
+	}
 
 	// Determine the range of entries to return.
 	if navigator.viewDataIndices[1] != 0 && navigator.viewDataIndices[0] <= navigator.SelectedIndex() &&
@@ -159,9 +167,6 @@ func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row, status st
 
 	// Store the indices used to generate the view data.
 	navigator.viewDataIndices = [2]uint16{start, end}
-
-	// Return the current directory path as the status.
-	status = navigator.CurrentPath()
 
 	return
 }
