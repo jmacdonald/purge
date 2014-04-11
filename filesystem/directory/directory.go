@@ -20,19 +20,23 @@ type Entry struct {
 
 // Calculates and returns the size (in
 // bytes) of the directory for the given path.
-func Size(path string) (size int64) {
+func Size(path string, result chan int64) {
+	var size int64
+
 	// Read the directory entries.
 	entries, _ := ioutil.ReadDir(path)
 
 	// Sum the entry sizes, recursing if necessary.
 	for _, entry := range entries {
 		if os.FileMode.IsDir(entry.Mode()) {
-			size += Size(path + "/" + entry.Name())
+			recursiveResult := make(chan int64)
+			go Size(path+"/"+entry.Name(), recursiveResult)
+			size += <-recursiveResult
 		} else {
 			size += entry.Size()
 		}
 	}
-	return
+	result <- size
 }
 
 // Returns a list of entries (and their sizes) for the given
@@ -50,7 +54,9 @@ func Entries(path string) (entries []*Entry) {
 		// Figure out the entry's size differently
 		// depending on whether or not it's a directory.
 		if entryInfo.IsDir() {
-			size = Size(path + "/" + entry.Name())
+			result := make(chan int64)
+			go Size(path+"/"+entry.Name(), result)
+			size = <-result
 		} else {
 			size = entryInfo.Size()
 		}

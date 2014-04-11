@@ -9,20 +9,23 @@ import (
 
 var _ = Describe("Directory", func() {
 	Describe("Size", func() {
-		var size int64
+		var result chan int64
 
 		Context("when passed a directory path", func() {
 			BeforeEach(func() {
+				result = make(chan int64)
 				dir, _ := os.Getwd()
-				size = directory.Size(dir + "/sample")
+
+				go directory.Size(dir+"/sample", result)
 			})
 
-			It("calculates the size of the directory", func() {
+			It("calculates the size of the directory", func(done Done) {
 				// Set the expectedSize to the actual size
 				// of the sample directory's contents.
 				const expectedSize int64 = 512020
 
-				Expect(size).To(Equal(expectedSize))
+				Expect(<-result).To(Equal(expectedSize))
+				close(done)
 			})
 		})
 	})
@@ -47,7 +50,9 @@ var _ = Describe("Directory", func() {
 				entryInfo, _ := os.Stat(dir + "/sample/" + entry.Name)
 
 				if entryInfo.IsDir() {
-					Expect(entry.Size).To(Equal(directory.Size(dir + "/sample/" + entry.Name)))
+					result := make(chan int64)
+					go directory.Size(dir+"/sample/"+entry.Name, result)
+					Expect(entry.Size).To(Equal(<-result))
 				} else {
 					Expect(entry.Size).To(Equal(entryInfo.Size()))
 				}
