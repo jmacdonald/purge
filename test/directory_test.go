@@ -9,13 +9,21 @@ import (
 
 var _ = Describe("Directory", func() {
 	Describe("Size", func() {
-		It("properly calculates the size of the sample directory", func() {
-			// Set the expectedSize to the actual size
-			// of the sample directory's contents.
-			const expectedSize int64 = 512020
+		var size int64
 
-			dir, _ := os.Getwd()
-			Expect(directory.Size(dir + "/sample")).To(Equal(expectedSize))
+		Context("when passed a directory path", func() {
+			BeforeEach(func() {
+				dir, _ := os.Getwd()
+				size = directory.Size(dir + "/sample")
+			})
+
+			It("calculates the size of the directory", func() {
+				// Set the expectedSize to the actual size
+				// of the sample directory's contents.
+				const expectedSize int64 = 512020
+
+				Expect(size).To(Equal(expectedSize))
+			})
 		})
 	})
 
