@@ -18,9 +18,14 @@ type Entry struct {
 	IsDirectory bool
 }
 
+type EntrySize struct {
+	Index int
+	Size  int64
+}
+
 // Calculates and returns the size (in
 // bytes) of the directory for the given path.
-func Size(path string, result chan int64) {
+func Size(path string, index int, entrySizeChannel chan *EntrySize) {
 	var size int64
 
 	// Read the directory entries.
@@ -29,14 +34,20 @@ func Size(path string, result chan int64) {
 	// Sum the entry sizes, recursing if necessary.
 	for _, entry := range entries {
 		if os.FileMode.IsDir(entry.Mode()) {
-			recursiveResult := make(chan int64)
-			go Size(path+"/"+entry.Name(), recursiveResult)
-			size += <-recursiveResult
+			// Allocate a channel to receive the size.
+			recursiveResult := make(chan *EntrySize)
+
+			// Recurse with a useless index (we're only summarizing, we don't care about order),
+			// blocking until we receive an answer (recursive calls don't need to be async).
+			go Size(path+"/"+entry.Name(), 0, recursiveResult)
+			size += (<-recursiveResult).Size
 		} else {
 			size += entry.Size()
 		}
 	}
-	result <- size
+
+	// Send the entry size on to the return channel.
+	entrySizeChannel <- &EntrySize{Index: index, Size: size}
 }
 
 // Returns a list of entries (and their sizes) for the given
@@ -54,9 +65,9 @@ func Entries(path string) (entries []*Entry) {
 		// Figure out the entry's size differently
 		// depending on whether or not it's a directory.
 		if entryInfo.IsDir() {
-			result := make(chan int64)
-			go Size(path+"/"+entry.Name(), result)
-			size = <-result
+			result := make(chan *EntrySize)
+			go Size(path+"/"+entry.Name(), 0, result)
+			size = (<-result).Size
 		} else {
 			size = entryInfo.Size()
 		}
