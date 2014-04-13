@@ -52,12 +52,17 @@ func Size(path string, index int, entrySizeChannel chan *EntrySize) {
 
 // Returns a list of entries (and their sizes) for the given
 // path. The current and parent (./..) entries are not included.
-func Entries(path string) (entries []*Entry) {
+// Directory sizes are calculated asynchronously and are returned
+// on the delayedEntrySizes channel, along with their array index.
+func Entries(path string) (entries []*Entry, delayedEntrySizes chan *EntrySize, delayedEntryCount int) {
 	var size int64
 
 	// Read the directory entries.
 	dirEntries, _ := ioutil.ReadDir(path)
 	entries = make([]*Entry, len(dirEntries))
+
+	// Allocate a channel to return delayed entry sizes.
+	delayedEntrySizes = make(chan *EntrySize, len(dirEntries))
 
 	for index, entry := range dirEntries {
 		entryInfo, _ := os.Stat(path + "/" + entry.Name())
@@ -65,9 +70,8 @@ func Entries(path string) (entries []*Entry) {
 		// Figure out the entry's size differently
 		// depending on whether or not it's a directory.
 		if entryInfo.IsDir() {
-			result := make(chan *EntrySize)
-			go Size(path+"/"+entry.Name(), 0, result)
-			size = (<-result).Size
+			go Size(path+"/"+entry.Name(), index, delayedEntrySizes)
+			delayedEntryCount++
 		} else {
 			size = entryInfo.Size()
 		}

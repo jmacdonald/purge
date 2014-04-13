@@ -49,6 +49,9 @@ func (navigator *Navigator) ViewDataIndices() [2]uint16 {
 // fetches the entries for the newly changed directory,
 // and resets the selected index to zero (if the directory is valid).
 func (navigator *Navigator) SetWorkingDirectory(path string) (error error) {
+	var delayedEntrySizes chan *EntrySize
+	var delayedEntryCount int
+
 	file, error := os.Stat(path)
 	if error == nil && file.IsDir() {
 		// Strip trailing slash, if present.
@@ -56,14 +59,30 @@ func (navigator *Navigator) SetWorkingDirectory(path string) (error error) {
 			path = path[:len(path)-1]
 		}
 
+		// Store the updated path.
 		navigator.currentPath = path
-		navigator.entries = Entries(path)
+
+		// Reset the selected index, effectively
+		// selecting the new directory's first entry.
 		navigator.selectedIndex = 0
+
+		// Fetch the new directory's entry names and sizes,
+		// along with the information required to handle its
+		// subdirectories being calculated asynchronously.
+		navigator.entries, delayedEntrySizes, delayedEntryCount = Entries(path)
+
+		// Reset the range of visible entries.
 		navigator.viewDataIndices = [2]uint16{0, 0}
 	} else if error == nil {
 		error = errors.New("path is not a directory")
 	}
 
+	// Wait for the delayed entry sizes to return
+	// and update the stored entries with their values.
+	for i := 0; i < delayedEntryCount; i++ {
+		entry := <-delayedEntrySizes
+		navigator.entries[entry.Index].Size = entry.Size
+	}
 	return
 }
 

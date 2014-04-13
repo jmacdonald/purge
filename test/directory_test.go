@@ -42,19 +42,28 @@ var _ = Describe("Directory", func() {
 	Describe("Entries", func() {
 		It("returns the correct number of entries", func() {
 			dir, _ := os.Getwd()
-			Expect(len(directory.Entries(dir + "/sample"))).To(Equal(3))
+			entries, _, _ := directory.Entries(dir + "/sample")
+			Expect(len(entries)).To(Equal(3))
 		})
 
 		It("returns the proper names", func() {
 			dir, _ := os.Getwd()
-			entries := directory.Entries(dir + "/sample")
+			entries, _, _ := directory.Entries(dir + "/sample")
 			Expect(contains(entries, "directory")).To(BeTrue())
 			Expect(contains(entries, "file")).To(BeTrue())
 		})
 
-		It("returns the proper sizes", func() {
+		It("returns the proper sizes", func(done Done) {
 			dir, _ := os.Getwd()
-			entries := directory.Entries(dir + "/sample")
+			entries, delayedEntrySizes, delayedEntryCount := directory.Entries(dir + "/sample")
+
+			// Wait for the delayed entry sizes to return
+			// and update the stored entries with their values.
+			for i := 0; i < delayedEntryCount; i++ {
+				entry := <-delayedEntrySizes
+				entries[entry.Index].Size = entry.Size
+			}
+
 			for _, entry := range entries {
 				entryInfo, _ := os.Stat(dir + "/sample/" + entry.Name)
 
@@ -66,11 +75,13 @@ var _ = Describe("Directory", func() {
 					Expect(entry.Size).To(Equal(entryInfo.Size()))
 				}
 			}
+
+			close(done)
 		})
 
 		It("returns the proper directory statuses", func() {
 			dir, _ := os.Getwd()
-			entries := directory.Entries(dir + "/sample")
+			entries, _, _ := directory.Entries(dir + "/sample")
 			for _, entry := range entries {
 				fileInfo, _ := os.Stat(dir + "/sample/" + entry.Name)
 				Expect(entry.IsDirectory).To(Equal(fileInfo.IsDir()))

@@ -48,7 +48,16 @@ var _ = Describe("Navigator", func() {
 			})
 
 			It("updates entries using path argument", func() {
-				Expect(navigator.Entries()).To(Equal(directory.Entries(path)))
+				entries, delayedEntrySizes, delayedEntryCount := directory.Entries(path)
+
+				// Wait for the delayed entry sizes to return
+				// and update the stored entries with their values.
+				for i := 0; i < delayedEntryCount; i++ {
+					entry := <-delayedEntrySizes
+					entries[entry.Index].Size = entry.Size
+				}
+
+				Expect(navigator.Entries()).To(Equal(entries))
 			})
 
 			It("resets selected index to zero", func() {
@@ -86,7 +95,16 @@ var _ = Describe("Navigator", func() {
 			})
 
 			It("does not update entries", func() {
-				Expect(navigator.Entries()).To(Equal(directory.Entries(originalPath)))
+				entries, delayedEntrySizes, delayedEntryCount := directory.Entries(originalPath)
+
+				// Wait for the delayed entry sizes to return
+				// and update the stored entries with their values.
+				for i := 0; i < delayedEntryCount; i++ {
+					entry := <-delayedEntrySizes
+					entries[entry.Index].Size = entry.Size
+				}
+
+				Expect(navigator.Entries()).To(Equal(entries))
 			})
 
 			It("does not reset selected index to zero", func() {
@@ -112,7 +130,16 @@ var _ = Describe("Navigator", func() {
 			})
 
 			It("does not update entries", func() {
-				Expect(navigator.Entries()).To(Equal(directory.Entries(originalPath)))
+				entries, delayedEntrySizes, delayedEntryCount := directory.Entries(originalPath)
+
+				// Wait for the delayed entry sizes to return
+				// and update the stored entries with their values.
+				for i := 0; i < delayedEntryCount; i++ {
+					entry := <-delayedEntrySizes
+					entries[entry.Index].Size = entry.Size
+				}
+
+				Expect(navigator.Entries()).To(Equal(entries))
 			})
 
 			It("does not reset selected index to zero", func() {
