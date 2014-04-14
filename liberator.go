@@ -6,9 +6,13 @@ import (
 	"github.com/jmacdonald/liberator/view"
 	"github.com/nsf/termbox-go"
 	"os"
+	"runtime"
 )
 
 func main() {
+	// Use all available "logical CPUs", as reported by the machine.
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	// Initialize a navigator in the current directory.
 	currentPath, err := os.Getwd()
 	if err != nil {
