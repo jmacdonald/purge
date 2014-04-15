@@ -274,6 +274,54 @@ var _ = Describe("Navigator", func() {
 		})
 	})
 
+	Describe("RemoveSelectedEntry", func() {
+		var file_name, directory_name string
+
+		JustBeforeEach(func() {
+			error = navigator.RemoveSelectedEntry()
+		})
+
+		Context("selected entry is a file", func() {
+			BeforeEach(func() {
+				file_name = "new_file"
+				os.Create(file_name)
+
+				// Update the navigator's cached entries.
+				navigator.SetWorkingDirectory(originalPath)
+
+				for navigator.SelectedEntry().Name != file_name {
+					navigator.SelectNextEntry()
+				}
+			})
+
+			It("deletes the file", func() {
+				_, err := os.Stat(file_name)
+				Expect(os.IsNotExist(err)).To(BeTrue())
+			})
+		})
+
+		Context("selected entry is a directory with files", func() {
+			BeforeEach(func() {
+				file_name = "new_file"
+				directory_name = "new_directory"
+				os.Mkdir(directory_name, 0700)
+				os.Create(directory_name + "/" + file_name)
+
+				// Update the navigator's cached entries.
+				navigator.SetWorkingDirectory(originalPath)
+
+				for navigator.SelectedEntry().Name != directory_name {
+					navigator.SelectNextEntry()
+				}
+			})
+
+			It("deletes the directory", func() {
+				_, err := os.Stat(directory_name)
+				Expect(os.IsNotExist(err)).To(BeTrue())
+			})
+		})
+	})
+
 	Describe("ToParentDirectory", func() {
 		var parent_path string
 
