@@ -96,7 +96,12 @@ func (navigator *Navigator) IntoSelectedEntry() error {
 
 // Removes/deletes the selected entry.
 func (navigator *Navigator) RemoveSelectedEntry() error {
-	return os.RemoveAll(navigator.CurrentPath() + "/" + navigator.SelectedEntry().Name)
+	err := os.RemoveAll(navigator.CurrentPath() + "/" + navigator.SelectedEntry().Name)
+	if err == nil {
+		navigator.entries = Entries(navigator.CurrentPath())
+	}
+
+	return err
 }
 
 // Navigates to the parent directory.

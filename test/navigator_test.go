@@ -298,6 +298,11 @@ var _ = Describe("Navigator", func() {
 				_, err := os.Stat(file_name)
 				Expect(os.IsNotExist(err)).To(BeTrue())
 			})
+
+			It("removes the file from the navigator's entries", func() {
+				file_entry := &directory.Entry{Name: file_name, Size: 0, IsDirectory: false}
+				Expect(navigator.Entries()).ToNot(ContainElement(file_entry))
+			})
 		})
 
 		Context("selected entry is a directory with files", func() {
