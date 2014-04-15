@@ -90,7 +90,7 @@ func (navigator *Navigator) SelectPreviousEntry() {
 
 // Navigates into the selected entry, if it is a directory.
 func (navigator *Navigator) IntoSelectedEntry() error {
-	entry := navigator.Entries()[navigator.SelectedIndex()]
+	entry := navigator.SelectedEntry()
 	return navigator.SetWorkingDirectory(navigator.CurrentPath() + "/" + entry.Name)
 }
 

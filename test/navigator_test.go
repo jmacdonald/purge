@@ -243,7 +243,7 @@ var _ = Describe("Navigator", func() {
 
 		Context("a directory is selected", func() {
 			BeforeEach(func() {
-				for navigator.Entries()[navigator.SelectedIndex()].Name != "directory" {
+				for navigator.SelectedEntry().Name != "directory" {
 					navigator.SelectNextEntry()
 				}
 			})
@@ -259,7 +259,7 @@ var _ = Describe("Navigator", func() {
 
 		Context("a file is selected", func() {
 			BeforeEach(func() {
-				for navigator.Entries()[navigator.SelectedIndex()].Name != "file" {
+				for navigator.SelectedEntry().Name != "file" {
 					navigator.SelectNextEntry()
 				}
 			})
@@ -337,11 +337,11 @@ var _ = Describe("Navigator", func() {
 
 				Context("selected entry is a directory", func() {
 					BeforeEach(func() {
-						entry := navigator.Entries()[navigator.SelectedIndex()]
+						entry := navigator.SelectedEntry()
 
 						for !entry.IsDirectory {
 							navigator.SelectNextEntry()
-							entry = navigator.Entries()[navigator.SelectedIndex()]
+							entry = navigator.SelectedEntry()
 						}
 					})
 
@@ -350,17 +350,17 @@ var _ = Describe("Navigator", func() {
 					})
 
 					It("has a forward slash appended to its name", func() {
-						Expect(rows[0].Left).To(Equal(navigator.Entries()[navigator.SelectedIndex()].Name + "/"))
+						Expect(rows[0].Left).To(Equal(navigator.SelectedEntry().Name + "/"))
 					})
 				})
 
 				Context("selected entry is not a directory", func() {
 					BeforeEach(func() {
-						entry := navigator.Entries()[navigator.SelectedIndex()]
+						entry := navigator.SelectedEntry()
 
 						for entry.IsDirectory {
 							navigator.SelectNextEntry()
-							entry = navigator.Entries()[navigator.SelectedIndex()]
+							entry = navigator.SelectedEntry()
 						}
 					})
 
