@@ -39,6 +39,11 @@ func (navigator *Navigator) Entries() []*Entry {
 	return navigator.entries
 }
 
+// Returns the navigator's currently selected entry.
+func (navigator *Navigator) SelectedEntry() *Entry {
+	return navigator.Entries()[navigator.SelectedIndex()]
+}
+
 // Returns the last slice indices used by View(). This is only used internally, with the
 // exception of tests, to provide view updates that take previous context into account.
 func (navigator *Navigator) ViewDataIndices() [2]uint16 {

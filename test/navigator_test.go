@@ -132,6 +132,18 @@ var _ = Describe("Navigator", func() {
 		})
 	})
 
+	Describe("SelectedEntry", func() {
+		Context("the second entry is selected", func() {
+			BeforeEach(func() {
+				navigator.SelectNextEntry()
+			})
+
+			It("returns the entry at the currently selected index", func() {
+				Expect(navigator.SelectedEntry()).To(Equal(navigator.Entries()[navigator.SelectedIndex()]))
+			})
+		})
+	})
+
 	Describe("SelectNextEntry", func() {
 		JustBeforeEach(func() {
 			navigator.SelectNextEntry()
