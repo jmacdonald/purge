@@ -8,6 +8,7 @@ type Navigator struct {
 	SelectPreviousEntryCalled bool
 	IntoSelectedEntryCalled   bool
 	ToParentDirectoryCalled   bool
+	RemoveSelectedEntryCalled bool
 }
 
 // Implement the Navigator interface methods as defined in input.go
@@ -26,5 +27,10 @@ func (n *Navigator) IntoSelectedEntry() error {
 
 func (n *Navigator) ToParentDirectory() error {
 	n.ToParentDirectoryCalled = true
+	return nil
+}
+
+func (n *Navigator) RemoveSelectedEntry() error {
+	n.RemoveSelectedEntryCalled = true
 	return nil
 }

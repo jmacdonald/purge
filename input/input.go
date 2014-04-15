@@ -14,6 +14,7 @@ type Navigator interface {
 	SelectPreviousEntry()
 	IntoSelectedEntry() error
 	ToParentDirectory() error
+	RemoveSelectedEntry() error
 }
 
 // Reads and returns a single rune from the provided source.
@@ -41,6 +42,8 @@ func Map(character rune, navigator Navigator) bool {
 		navigator.IntoSelectedEntry()
 	case 'h':
 		navigator.ToParentDirectory()
+	case 'x':
+		navigator.RemoveSelectedEntry()
 	case 'q':
 		return true
 	}

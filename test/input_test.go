@@ -77,6 +77,16 @@ var _ = Describe("Input", func() {
 			})
 		})
 
+		Context("input is an 'x'", func() {
+			BeforeEach(func() {
+				character = 'x'
+			})
+
+			It("calls RemoveSelectedEntry() on navigator", func() {
+				Expect(navigator.RemoveSelectedEntryCalled).To(BeTrue())
+			})
+		})
+
 		Context("input is a 'q'", func() {
 			BeforeEach(func() {
 				character = 'q'
