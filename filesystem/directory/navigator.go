@@ -98,7 +98,7 @@ func (navigator *Navigator) IntoSelectedEntry() error {
 func (navigator *Navigator) RemoveSelectedEntry() error {
 	err := os.RemoveAll(navigator.CurrentPath() + "/" + navigator.SelectedEntry().Name)
 	if err == nil {
-		navigator.entries = Entries(navigator.CurrentPath())
+		navigator.SetWorkingDirectory(navigator.CurrentPath())
 	}
 
 	return err
