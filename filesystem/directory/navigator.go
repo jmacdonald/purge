@@ -98,7 +98,9 @@ func (navigator *Navigator) IntoSelectedEntry() error {
 func (navigator *Navigator) RemoveSelectedEntry() error {
 	err := os.RemoveAll(navigator.CurrentPath() + "/" + navigator.SelectedEntry().Name)
 	if err == nil {
-		navigator.SetWorkingDirectory(navigator.CurrentPath())
+		// Create a new slice of entries by combining slices surrounding the deleted entry.
+		navigator.entries = append(navigator.entries[0:navigator.selectedIndex],
+			navigator.entries[navigator.selectedIndex+1:]...)
 	}
 
 	return err

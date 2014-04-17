@@ -276,6 +276,7 @@ var _ = Describe("Navigator", func() {
 
 	Describe("RemoveSelectedEntry", func() {
 		var file_name, directory_name string
+		var entryCount int
 
 		JustBeforeEach(func() {
 			error = navigator.RemoveSelectedEntry()
@@ -289,6 +290,10 @@ var _ = Describe("Navigator", func() {
 				// Update the navigator's cached entries.
 				navigator.SetWorkingDirectory(originalPath)
 
+				// Keep a reference to the size of the original entry set.
+				entryCount = len(navigator.Entries())
+
+				// Select the newly created file.
 				for navigator.SelectedEntry().Name != file_name {
 					navigator.SelectNextEntry()
 				}
@@ -302,6 +307,10 @@ var _ = Describe("Navigator", func() {
 			It("removes the file from the navigator's entries", func() {
 				file_entry := &directory.Entry{Name: file_name, Size: 0, IsDirectory: false}
 				Expect(navigator.Entries()).ToNot(ContainElement(file_entry))
+			})
+
+			It("leaves the navigator with the correct number of entries", func() {
+				Expect(len(navigator.Entries())).To(Equal(entryCount - 1))
 			})
 		})
 
