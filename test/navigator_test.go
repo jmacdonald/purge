@@ -348,6 +348,57 @@ var _ = Describe("Navigator", func() {
 				Expect(os.IsNotExist(err)).To(BeTrue())
 			})
 		})
+
+		Describe("selected entry after removal", func() {
+			var first_file_name, second_file_name, last_file_name string
+			BeforeEach(func() {
+				// Create a directory.
+				directory_name = "new_directory"
+				os.Mkdir(directory_name, 0700)
+
+				// Create three files in that directory, using numbers to guarantee sorting.
+				first_file_name = "1"
+				second_file_name = "2"
+				last_file_name = "3"
+				os.Create(directory_name + "/" + first_file_name)
+				os.Create(directory_name + "/" + second_file_name)
+				os.Create(directory_name + "/" + last_file_name)
+
+				// Navigate into the new directory
+				navigator.SetWorkingDirectory(originalPath + "/" + directory_name)
+			})
+
+			AfterEach(func() {
+				os.RemoveAll(directory_name)
+			})
+
+			Context("selected entry is the first entry", func() {
+				It("selects the second entry", func() {
+					Expect(navigator.SelectedEntry().Name).To(Equal(second_file_name))
+				})
+			})
+
+			Context("selected entry is the second entry", func() {
+				BeforeEach(func() {
+					navigator.SelectNextEntry()
+				})
+
+				It("selects the second entry", func() {
+					Expect(navigator.SelectedEntry().Name).To(Equal(last_file_name))
+				})
+			})
+
+			Context("selected entry is the last entry", func() {
+				BeforeEach(func() {
+					navigator.SelectNextEntry()
+					navigator.SelectNextEntry()
+				})
+
+				It("selects the second entry", func() {
+					Expect(navigator.SelectedEntry().Name).To(Equal(last_file_name))
+				})
+			})
+		})
 	})
 
 	Describe("ToParentDirectory", func() {
