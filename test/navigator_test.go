@@ -142,6 +142,20 @@ var _ = Describe("Navigator", func() {
 				Expect(navigator.SelectedEntry()).To(Equal(navigator.Entries()[navigator.SelectedIndex()]))
 			})
 		})
+
+		Context("current directory is empty", func() {
+			BeforeEach(func() {
+				directory_name := "new_directory"
+				os.Mkdir(directory_name, 0700)
+
+				// Navigate into the empty directory
+				navigator.SetWorkingDirectory(originalPath + "/" + directory_name)
+			})
+
+			It("returns nil", func() {
+				Expect(navigator.SelectedEntry()).To(BeNil())
+			})
+		})
 	})
 
 	Describe("SelectNextEntry", func() {

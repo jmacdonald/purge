@@ -41,7 +41,12 @@ func (navigator *Navigator) Entries() []*Entry {
 
 // Returns the navigator's currently selected entry.
 func (navigator *Navigator) SelectedEntry() *Entry {
-	return navigator.Entries()[navigator.SelectedIndex()]
+	// Prevent an empty directory from accessing an out-of-bounds index.
+	if navigator.SelectedIndex() < uint16(len(navigator.Entries())) {
+		return navigator.Entries()[navigator.SelectedIndex()]
+	}
+
+	return nil
 }
 
 // Returns the last slice indices used by View(). This is only used internally, with the
