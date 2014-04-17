@@ -63,7 +63,7 @@ var _ = Describe("Navigator", func() {
 				_, _ = navigator.View(1)
 
 				navigator.SetWorkingDirectory(path)
-				Expect(navigator.ViewDataIndices()).To(Equal([2]uint16{0, 0}))
+				Expect(navigator.ViewDataIndices()).To(Equal([2]int{0, 0}))
 			})
 		})
 
@@ -184,11 +184,11 @@ var _ = Describe("Navigator", func() {
 			})
 
 			Context("last entry is selected", func() {
-				var selectedIndex uint16
+				var selectedIndex int
 
 				BeforeEach(func() {
 					// Call SelectNextEntry() until the last entry is selected.
-					for uint16(len(navigator.Entries()))-navigator.SelectedIndex() > 1 {
+					for len(navigator.Entries())-navigator.SelectedIndex() > 1 {
 						navigator.SelectNextEntry()
 					}
 
@@ -225,11 +225,11 @@ var _ = Describe("Navigator", func() {
 			})
 
 			Context("last entry is selected", func() {
-				var selectedIndex uint16
+				var selectedIndex int
 
 				BeforeEach(func() {
 					// Call SelectNextEntry() until the last entry is selected.
-					for uint16(len(navigator.Entries()))-navigator.SelectedIndex() > 1 {
+					for len(navigator.Entries())-navigator.SelectedIndex() > 1 {
 						navigator.SelectNextEntry()
 					}
 
@@ -425,7 +425,7 @@ var _ = Describe("Navigator", func() {
 	Describe("View", func() {
 		var rows []view.Row
 		var status string
-		var maxRows uint16
+		var maxRows int
 
 		JustBeforeEach(func() {
 			rows, status = navigator.View(maxRows)
@@ -445,7 +445,7 @@ var _ = Describe("Navigator", func() {
 			})
 
 			It("stores the proper view data indices", func() {
-				Expect(navigator.ViewDataIndices()).To(Equal([2]uint16{0, 1}))
+				Expect(navigator.ViewDataIndices()).To(Equal([2]int{0, 1}))
 			})
 
 			Describe("returned row", func() {
@@ -508,7 +508,7 @@ var _ = Describe("Navigator", func() {
 			})
 
 			It("stores the proper view data indices", func() {
-				Expect(navigator.ViewDataIndices()).To(Equal([2]uint16{0, 2}))
+				Expect(navigator.ViewDataIndices()).To(Equal([2]int{0, 2}))
 			})
 
 			Context("selected entry has never been changed", func() {

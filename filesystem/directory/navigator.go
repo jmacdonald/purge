@@ -11,9 +11,9 @@ import (
 // navigating directories and their entries.
 type Navigator struct {
 	currentPath     string
-	selectedIndex   uint16
+	selectedIndex   int
 	entries         []*Entry
-	viewDataIndices [2]uint16
+	viewDataIndices [2]int
 }
 
 // NewNavigator constructs a new navigator object.
@@ -29,7 +29,7 @@ func (navigator *Navigator) CurrentPath() string {
 }
 
 // Returns the navigator's currently selected index.
-func (navigator *Navigator) SelectedIndex() uint16 {
+func (navigator *Navigator) SelectedIndex() int {
 	return navigator.selectedIndex
 }
 
@@ -42,7 +42,7 @@ func (navigator *Navigator) Entries() []*Entry {
 // Returns the navigator's currently selected entry.
 func (navigator *Navigator) SelectedEntry() *Entry {
 	// Prevent an empty directory from accessing an out-of-bounds index.
-	if navigator.SelectedIndex() < uint16(len(navigator.Entries())) {
+	if navigator.SelectedIndex() < len(navigator.Entries()) {
 		return navigator.Entries()[navigator.SelectedIndex()]
 	}
 
@@ -51,7 +51,7 @@ func (navigator *Navigator) SelectedEntry() *Entry {
 
 // Returns the last slice indices used by View(). This is only used internally, with the
 // exception of tests, to provide view updates that take previous context into account.
-func (navigator *Navigator) ViewDataIndices() [2]uint16 {
+func (navigator *Navigator) ViewDataIndices() [2]int {
 	return navigator.viewDataIndices
 }
 
@@ -69,7 +69,7 @@ func (navigator *Navigator) SetWorkingDirectory(path string) (error error) {
 		navigator.currentPath = path
 		navigator.entries = Entries(path)
 		navigator.selectedIndex = 0
-		navigator.viewDataIndices = [2]uint16{0, 0}
+		navigator.viewDataIndices = [2]int{0, 0}
 	} else if error == nil {
 		error = errors.New("path is not a directory")
 	}
@@ -80,7 +80,7 @@ func (navigator *Navigator) SetWorkingDirectory(path string) (error error) {
 // Moves the selectedIndex to the next entry in the
 // list, if the current selection isn't already at the end.
 func (navigator *Navigator) SelectNextEntry() {
-	if uint16(len(navigator.entries))-navigator.selectedIndex > 1 {
+	if len(navigator.entries)-navigator.selectedIndex > 1 {
 		navigator.selectedIndex++
 	}
 }
@@ -103,8 +103,8 @@ func (navigator *Navigator) IntoSelectedEntry() error {
 func (navigator *Navigator) RemoveSelectedEntry() error {
 	err := os.RemoveAll(navigator.CurrentPath() + "/" + navigator.SelectedEntry().Name)
 	if err == nil {
-		if navigator.selectedIndex == uint16(len(navigator.entries)-1) {
-			navigator.selectedIndex = uint16(len(navigator.entries) - 2)
+		if navigator.selectedIndex == len(navigator.entries)-1 {
+			navigator.selectedIndex = len(navigator.entries) - 2
 		}
 
 		// Create a new slice of entries by combining slices surrounding the deleted entry.
@@ -125,16 +125,16 @@ func (navigator *Navigator) ToParentDirectory() error {
 }
 
 // Generates a slice of rows with all of the data required for display.
-func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row, status string) {
-	var start, end, size uint16
+func (navigator *Navigator) View(maxRows int) (viewData []view.Row, status string) {
+	var start, end, size int
 
 	// Return the current directory path as the status.
 	status = navigator.CurrentPath()
 
 	// Create a slice with a size that is the lesser of the entry count and maxRows.
 	entryCount := len(navigator.Entries())
-	if maxRows > uint16(entryCount) {
-		size = uint16(entryCount)
+	if maxRows > entryCount {
+		size = entryCount
 	} else {
 		size = maxRows
 	}
@@ -192,7 +192,7 @@ func (navigator *Navigator) View(maxRows uint16) (viewData []view.Row, status st
 	}
 
 	// Store the indices used to generate the view data.
-	navigator.viewDataIndices = [2]uint16{start, end}
+	navigator.viewDataIndices = [2]int{start, end}
 
 	return
 }

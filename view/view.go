@@ -13,7 +13,7 @@ Viewer is an interface used by Render to standardize data
 from a data source such that it can be displayed properly.
 */
 type Viewer interface {
-	View(maxRows uint16) ([]Row, string)
+	View(maxRows int) ([]Row, string)
 }
 
 /*
@@ -39,7 +39,7 @@ func Render(source Viewer) {
 	// Request the view data with a row maximum that's
 	// one row smaller than the screen height, so that
 	// we can render a status bar.
-	rows, status := source.View(uint16(height - 1))
+	rows, status := source.View(height - 1)
 
 	// Clear the screen so that we can render new content to it.
 	err := termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
