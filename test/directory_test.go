@@ -24,7 +24,7 @@ var _ = Describe("Directory", func() {
 			It("calculates the size of the directory", func(done Done) {
 				// Set the expectedSize to the actual size
 				// of the sample directory's contents.
-				const expectedSize int64 = 512020
+				const expectedSize int64 = 512026
 
 				entrySize := <-result
 				Expect(entrySize.Size).To(Equal(expectedSize))
@@ -42,7 +42,7 @@ var _ = Describe("Directory", func() {
 	Describe("Entries", func() {
 		It("returns the correct number of entries", func() {
 			dir, _ := os.Getwd()
-			Expect(len(directory.Entries(dir + "/sample"))).To(Equal(3))
+			Expect(len(directory.Entries(dir + "/sample"))).To(Equal(4))
 		})
 
 		It("returns the proper names", func() {
