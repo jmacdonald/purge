@@ -450,7 +450,7 @@ var _ = Describe("Navigator", func() {
 
 			Describe("returned row", func() {
 				It("has its left value set to the first entry's name", func() {
-					Expect(rows[0].Left).To(Equal(navigator.Entries()[0].Name))
+					Expect(rows[0].Left).To(ContainSubstring(navigator.Entries()[0].Name))
 				})
 
 				It("has its right value set to the first entry's formatted size", func() {
