@@ -104,12 +104,15 @@ func (navigator *Navigator) RemoveSelectedEntry() error {
 	err := os.RemoveAll(navigator.CurrentPath() + "/" + navigator.SelectedEntry().Name)
 	if err == nil {
 		if navigator.selectedIndex == len(navigator.entries)-1 {
-			navigator.selectedIndex = len(navigator.entries) - 2
-		}
+			navigator.selectedIndex = len(navigator.entries)-2
 
-		// Create a new slice of entries by combining slices surrounding the deleted entry.
-		navigator.entries = append(navigator.entries[0:navigator.selectedIndex],
-			navigator.entries[navigator.selectedIndex+1:]...)
+			// Trim the last entry off of the slice
+			navigator.entries = navigator.entries[0:navigator.selectedIndex+1]
+		} else {
+			// Create a new slice of entries by combining slices surrounding the deleted entry.
+			navigator.entries = append(navigator.entries[0:navigator.selectedIndex],
+				navigator.entries[navigator.selectedIndex+1:]...)
+		}
 	}
 
 	return err

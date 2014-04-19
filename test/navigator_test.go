@@ -395,7 +395,7 @@ var _ = Describe("Navigator", func() {
 				})
 
 				It("selects the second entry", func() {
-					Expect(navigator.SelectedEntry().Name).To(Equal(last_file_name))
+					Expect(navigator.SelectedEntry().Name).To(Equal(second_file_name))
 				})
 			})
 		})
