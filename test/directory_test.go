@@ -76,6 +76,19 @@ var _ = Describe("Directory", func() {
 				Expect(entry.IsDirectory).To(Equal(fileInfo.IsDir()))
 			}
 		})
+
+		It("returns the entries sorted by size (largest to smallest)", func() {
+			dir, _ := os.Getwd()
+			entries := directory.Entries(dir + "/sample")
+
+			// Collect the entry names.
+			entry_names := make([]string, len(entries), len(entries))
+			for index, entry := range entries {
+				entry_names[index] = entry.Name
+			}
+
+			Expect(entry_names).To(Equal([]string{"directory", "file", "small_file", "empty_file"}))
+		})
 	})
 })
 

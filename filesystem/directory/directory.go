@@ -9,6 +9,7 @@ package directory
 import (
 	"io/ioutil"
 	"os"
+	"sort"
 )
 
 // Structure representing a directory entry.
@@ -21,6 +22,31 @@ type Entry struct {
 type EntrySize struct {
 	Index int
 	Size  int64
+}
+
+// Alias a slice of entries so that
+// we can implement sort.Interface.
+type sortableEntries []*Entry
+
+// Implement sort.Interface length function.
+func (e sortableEntries) Len() int {
+	return len(e)
+}
+
+// Implement sort.Interface comparison function,
+// using the entry size as a comparator.
+func (e sortableEntries) Less(i, j int) bool {
+	if e[i].Size > e[j].Size {
+		return true
+	} else {
+		return false
+	}
+}
+
+// Implement sort.Interface swap method,
+// used to re-arrange misplaced entries.
+func (e sortableEntries) Swap(i, j int) {
+	e[i], e[j] = e[j], e[i]
 }
 
 // Calculates and returns the size (in
@@ -91,6 +117,9 @@ func Entries(path string) (entries []*Entry) {
 		// Update the stored entry size.
 		entries[directorySize.Index].Size = directorySize.Size
 	}
+
+	// Sort the entries, casting them to their sortable equivalent.
+	sort.Sort(sortableEntries(entries))
 
 	return
 }
