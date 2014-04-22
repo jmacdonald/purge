@@ -148,6 +148,12 @@ func (navigator *Navigator) View(maxRows int) (viewData []view.Row, status strin
 		return
 	}
 
+	// Deleting an entry can result in the cached view range indices 
+	// being out of bounds; correct that if it has occurred.
+	if navigator.viewDataIndices[1] > entryCount {
+		navigator.viewDataIndices[1] = entryCount
+	}
+
 	// Determine the range of entries to return.
 	if navigator.viewDataIndices[1] != 0 && navigator.viewDataIndices[0] <= navigator.SelectedIndex() &&
 		navigator.SelectedIndex() < navigator.viewDataIndices[1] {

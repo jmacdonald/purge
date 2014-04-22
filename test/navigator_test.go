@@ -632,5 +632,30 @@ var _ = Describe("Navigator", func() {
 				Expect(len(slice)).To(BeZero())
 			})
 		})
+
+		Context("after a file has been removed", func() {
+			BeforeEach(func() {
+				maxRows = 1
+
+				// Create a new file.
+				file_name := "new_file"
+				os.Create(file_name)
+
+				// Update the navigator's cached entries.
+				navigator.SetWorkingDirectory(originalPath)
+
+				// Select the newly created file.
+				for navigator.SelectedEntry().Name != file_name {
+					navigator.SelectNextEntry()
+				}
+
+				// Remove it.
+				navigator.RemoveSelectedEntry()
+			})
+
+			It("does not panic", func() {
+				Expect(func() { navigator.View(maxRows) }).ToNot(Panic())
+			})
+		})
 	})
 })
