@@ -34,7 +34,7 @@ Render a data source that implements the
 Viewer interface to the terminal using termbox.
 */
 func Render(source Viewer) {
-	width, height := termbox.Size()
+	_, height := termbox.Size()
 
 	// Request the view data with a row maximum that's
 	// one row smaller than the screen height, so that
@@ -52,31 +52,14 @@ func Render(source Viewer) {
 		renderRow(row, index)
 	}
 
-	// Print the status to the bottom of the screen by stepping
-	// through the bottom row one cell at a time and printing
-	// a character from the status message, or a blank space,
-	// until all of the row has been filled.
-	for column, offset := 0, 0; column < width; column++ {
-		var character rune
-		var size int
-
-		// Decode the next rune and advance the offset by its length,
-		// or if we've already read the entire string, use a space instead.
-		if offset < len(status) {
-			character, size = utf8.DecodeRune([]byte(status)[offset:])
-			offset += size
-		} else {
-			character = ' '
-		}
-
-		// Print the character to the screen in a highlighted colour.
-		termbox.SetCell(column, height-1, character, termbox.ColorBlack, termbox.ColorWhite)
-	}
+	// Render the source's status string.
+	renderStatus(status)
 
 	// Draw new content to the screen.
 	termbox.Flush()
 }
 
+// Render a single row of data to the screen.
 func renderRow(row Row, rowNumber int) {
 	width, _ := termbox.Size()
 
@@ -102,6 +85,32 @@ func renderRow(row Row, rowNumber int) {
 			termbox.SetCell(column, rowNumber, character, fgColour, bgColour)
 			column++
 		}
+	}
+}
+
+// Render a status message to the bottom of the screen.
+func renderStatus(status string) {
+	width, height := termbox.Size()
+
+	// Print the status to the bottom of the screen by stepping
+	// through the bottom row one cell at a time and printing
+	// a character from the status message, or a blank space,
+	// until all of the row has been filled.
+	for column, offset := 0, 0; column < width; column++ {
+		var character rune
+		var size int
+
+		// Decode the next rune and advance the offset by its length,
+		// or if we've already read the entire string, use a space instead.
+		if offset < len(status) {
+			character, size = utf8.DecodeRune([]byte(status)[offset:])
+			offset += size
+		} else {
+			character = ' '
+		}
+
+		// Print the character to the screen in a highlighted colour.
+		termbox.SetCell(column, height-1, character, termbox.ColorBlack, termbox.ColorWhite)
 	}
 }
 
