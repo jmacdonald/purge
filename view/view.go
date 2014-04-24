@@ -34,18 +34,18 @@ Render a data source that implements the
 Viewer interface to the terminal using termbox.
 */
 func Render(source Viewer) {
-	_, height := termbox.Size()
-
-	// Request the view data with a row maximum that's
-	// one row smaller than the screen height, so that
-	// we can render a status bar.
-	rows, status := source.View(height - 1)
-
-	// Clear the screen so that we can render new content to it.
+	// Refresh the contents of the screen.
 	err := termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
 	if err != nil {
 		return
 	}
+	defer termbox.Flush()
+
+	// Request the view data with a row maximum that's
+	// one row smaller than the screen height, so that
+	// we can render a status bar.
+	_, height := termbox.Size()
+	rows, status := source.View(height - 1)
 
 	// Render the source one row at a time.
 	for index, row := range rows {
@@ -54,9 +54,6 @@ func Render(source Viewer) {
 
 	// Render the source's status string.
 	renderStatus(status)
-
-	// Draw new content to the screen.
-	termbox.Flush()
 }
 
 // Render a single row of data to the screen.
