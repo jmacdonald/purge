@@ -67,10 +67,8 @@ func renderRow(row Row, rowNumber int) {
 	if err == nil {
 		// Step through the formatted row one rune at a time,
 		// printing the rune to the screen at the correct coordinates.
-		column := 0
-		for _, character := range formattedRow {
-			fgColour := termbox.ColorWhite
-			bgColour := termbox.ColorBlack
+		for column, character := range formattedRow {
+			fgColour, bgColour := termbox.ColorWhite, termbox.ColorBlack
 
 			if row.Highlight {
 				fgColour, bgColour = bgColour, fgColour
@@ -80,7 +78,6 @@ func renderRow(row Row, rowNumber int) {
 			}
 
 			termbox.SetCell(column, rowNumber, character, fgColour, bgColour)
-			column++
 		}
 	}
 }
