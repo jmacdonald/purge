@@ -47,31 +47,9 @@ func Render(source Viewer) {
 		return
 	}
 
-	// Step through the data one row at a time.
-	for row, rowData := range rows {
-		// Format the row such that it fills the screen,
-		// and properly aligns the left/right columns.
-		formattedRow, err := FormatRow(rowData, width)
-
-		if err == nil {
-			// Step through the formatted row one rune at a time,
-			// printing the rune to the screen at the correct coordinates.
-			column := 0
-			for _, character := range formattedRow {
-				fgColour := termbox.ColorWhite
-				bgColour := termbox.ColorBlack
-
-				if rowData.Highlight {
-					fgColour, bgColour = bgColour, fgColour
-				}
-				if rowData.Colour {
-					fgColour = termbox.ColorYellow
-				}
-
-				termbox.SetCell(column, row, character, fgColour, bgColour)
-				column++
-			}
-		}
+	// Render the source one row at a time.
+	for index, row := range rows {
+		renderRow(row, index)
 	}
 
 	// Print the status to the bottom of the screen by stepping
@@ -97,6 +75,34 @@ func Render(source Viewer) {
 
 	// Draw new content to the screen.
 	termbox.Flush()
+}
+
+func renderRow(row Row, rowNumber int) {
+	width, _ := termbox.Size()
+
+	// Format the row such that it fills the screen,
+	// and properly aligns the left/right columns.
+	formattedRow, err := FormatRow(row, width)
+
+	if err == nil {
+		// Step through the formatted row one rune at a time,
+		// printing the rune to the screen at the correct coordinates.
+		column := 0
+		for _, character := range formattedRow {
+			fgColour := termbox.ColorWhite
+			bgColour := termbox.ColorBlack
+
+			if row.Highlight {
+				fgColour, bgColour = bgColour, fgColour
+			}
+			if row.Colour {
+				fgColour = termbox.ColorYellow
+			}
+
+			termbox.SetCell(column, rowNumber, character, fgColour, bgColour)
+			column++
+		}
+	}
 }
 
 /*
