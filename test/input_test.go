@@ -1,8 +1,8 @@
 package test
 
 import (
-	"github.com/jmacdonald/liberator/input"
-	"github.com/jmacdonald/liberator/test/double"
+	"github.com/jmacdonald/purge/input"
+	"github.com/jmacdonald/purge/test/double"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

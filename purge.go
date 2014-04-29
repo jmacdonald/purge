@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/jmacdonald/liberator/filesystem/directory"
-	"github.com/jmacdonald/liberator/input"
-	"github.com/jmacdonald/liberator/view"
+	"github.com/jmacdonald/purge/filesystem/directory"
+	"github.com/jmacdonald/purge/input"
+	"github.com/jmacdonald/purge/view"
 	"github.com/nsf/termbox-go"
 	"os"
 	"runtime"

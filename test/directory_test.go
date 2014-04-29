@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/jmacdonald/liberator/filesystem/directory"
+	"github.com/jmacdonald/purge/filesystem/directory"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"os"

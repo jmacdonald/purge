@@ -2,7 +2,7 @@ package directory
 
 import (
 	"errors"
-	"github.com/jmacdonald/liberator/view"
+	"github.com/jmacdonald/purge/view"
 	"os"
 	"path/filepath"
 )
