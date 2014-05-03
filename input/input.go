@@ -7,6 +7,16 @@ import (
 	"unicode/utf8"
 )
 
+// Define a map to translate keystrokes into commands.
+Map := map[rune]string {
+	'j': "SelectNextEntry",
+	'k': "SelectPreviousEntry",
+	'\r': "IntoSelectedEntry",
+	'h': "ToParentDirectory",
+	'x': "RemoveSelectedEntry",
+	'q': "Quit"
+}
+
 // Navigator defines the interface expected by the input package,
 // so that navigator actions can be called based on input data.
 type Navigator interface {
@@ -28,24 +38,4 @@ func Read(source io.Reader) (value rune) {
 		value, _ = utf8.DecodeRune(data)
 	}
 	return
-}
-
-// Maps characters to their corresponding navigator actions.
-// This function will return true if the input is an exit request.
-func Map(character rune, navigator Navigator) bool {
-	switch character {
-	case 'j':
-		navigator.SelectNextEntry()
-	case 'k':
-		navigator.SelectPreviousEntry()
-	case '\r':
-		navigator.IntoSelectedEntry()
-	case 'h':
-		navigator.ToParentDirectory()
-	case 'x':
-		navigator.RemoveSelectedEntry()
-	case 'q':
-		return true
-	}
-	return false
 }
