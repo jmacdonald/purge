@@ -4,7 +4,6 @@ import (
 	"github.com/jmacdonald/purge/filesystem/directory"
 	"github.com/jmacdonald/purge/input"
 	"github.com/jmacdonald/purge/view"
-	"github.com/nsf/termbox-go"
 	"os"
 	"runtime"
 )
@@ -20,15 +19,24 @@ func main() {
 	}
 	nav := directory.NewNavigator(currentPath)
 
-	// Set up the terminal screen.
-	err = termbox.Init()
-	if err != nil {
-		panic(err)
-	}
-	defer termbox.Close()
+	// Create a buffer channel with which we'll
+	// communicate with the view goroutine.
+	viewBuffers := make(chan *view.Buffer)
 
-	// Do an initial render.
-	view.Render(nav)
+	// Create an exit channel with which we'll
+	// tell the view to clean up prior to an exit.
+	exit := make(chan bool)
+
+	// Create a complete channel with which the view will use
+	// to tell us an operation we're blocking on is complete.
+	complete := make(chan bool)
+
+	// Start the view in a goroutine.
+	go view.New(viewBuffers, exit, complete)
+
+	// Wait for the view to initialize, and then do an initial render.
+	<-complete
+	viewBuffers <- nav.View(view.Height())
 
 	// main application loop
 	for {
@@ -38,10 +46,17 @@ func main() {
 		// Invoke the correspoding navigator action,
 		// and exit the main loop if it returns true (exit request).
 		if input.Map(character, nav) {
+			// Signal the view to clean up.
+			exit <- true
+
+			// Wait until the view signals that it's complete.
+			<-complete
+
+			// Break out of the main application loop.
 			break
 		}
 
 		// Render the updated state.
-		view.Render(nav)
+		viewBuffers <- nav.View(view.Height())
 	}
 }

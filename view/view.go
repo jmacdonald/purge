@@ -8,16 +8,9 @@ import "fmt"
 import "github.com/nsf/termbox-go"
 import "unicode/utf8"
 
-/*
-Viewer is an interface used by Render to standardize data
-from a data source such that it can be displayed properly.
-*/
-type Viewer interface {
-	View(maxRows int) ([]Row, string)
-}
-
+// Buffer encapsulates all of the data required to render the view.
 type Buffer struct {
-	Rows []Row
+	Rows   []Row
 	Status string
 }
 
@@ -35,30 +28,49 @@ type Row struct {
 }
 
 /*
-Render a data source that implements the
-Viewer interface to the terminal using termbox.
+Construct a view that will listen for and render buffers sent to it.
 */
-func Render(source Viewer) {
-	// Refresh the contents of the screen.
-	err := termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
+func New(buffers <-chan *Buffer, exit <-chan bool, complete chan<- bool) {
+	// Set up the terminal screen.
+	err := termbox.Init()
 	if err != nil {
-		return
-	}
-	defer termbox.Flush()
-
-	// Request the view data with a row maximum that's
-	// one row smaller than the screen height, so that
-	// we can render a status bar.
-	_, height := termbox.Size()
-	rows, status := source.View(height - 1)
-
-	// Render the source one row at a time.
-	for index, row := range rows {
-		renderRow(row, index)
+		panic(err)
 	}
 
-	// Render the source's status string.
-	renderStatus(status)
+	// Signal the main process that we're ready.
+	complete <- true
+
+	for {
+		select {
+		case buffer := <-buffers:
+
+			// Refresh the contents of the screen.
+			err := termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
+			if err != nil {
+				return
+			}
+
+			// Render the source one row at a time.
+			for index, row := range buffer.Rows {
+				renderRow(row, index)
+			}
+
+			// Render the source's status string.
+			renderStatus(buffer.Status)
+
+			// Draw the contents to the screen.
+			termbox.Flush()
+		case <-exit:
+			// Clean up the display before exiting.
+			termbox.Close()
+
+			// Signal the main process that we're finished.
+			complete <- true
+
+			// Exit the main view loop.
+			break
+		}
+	}
 }
 
 // Render a single row of data to the screen.
@@ -111,6 +123,14 @@ func renderStatus(status string) {
 		// Print the character to the screen in a highlighted colour.
 		termbox.SetCell(column, height-1, character, termbox.ColorBlack, termbox.ColorWhite)
 	}
+}
+
+func Height() int {
+	// Return a height one row smaller than the screen
+	// height, so that we have room to render a status bar.
+	_, height := termbox.Size()
+
+	return height - 1
 }
 
 /*
