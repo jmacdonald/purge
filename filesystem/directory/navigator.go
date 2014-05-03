@@ -128,11 +128,11 @@ func (navigator *Navigator) ToParentDirectory() error {
 }
 
 // Generates a slice of rows with all of the data required for display.
-func (navigator *Navigator) View(maxRows int) (viewData []view.Row, status string) {
+func (navigator *Navigator) View(maxRows int) (*view.Buffer) {
 	var start, end, size int
 
 	// Return the current directory path as the status.
-	status = navigator.CurrentPath()
+	status := navigator.CurrentPath()
 
 	// Create a slice with a size that is the lesser of the entry count and maxRows.
 	entryCount := len(navigator.Entries())
@@ -141,11 +141,11 @@ func (navigator *Navigator) View(maxRows int) (viewData []view.Row, status strin
 	} else {
 		size = maxRows
 	}
-	viewData = make([]view.Row, size, size)
+	viewData := make([]view.Row, size, size)
 
 	// Don't bother going any further if there are no entries to work with.
 	if size == 0 {
-		return
+		return &view.Buffer{Rows: viewData, Status: status}
 	}
 
 	// Deleting an entry can result in the cached view range indices 
@@ -203,5 +203,5 @@ func (navigator *Navigator) View(maxRows int) (viewData []view.Row, status strin
 	// Store the indices used to generate the view data.
 	navigator.viewDataIndices = [2]int{start, end}
 
-	return
+	return &view.Buffer{Rows: viewData, Status: status}
 }

@@ -16,6 +16,11 @@ type Viewer interface {
 	View(maxRows int) ([]Row, string)
 }
 
+type Buffer struct {
+	Rows []Row
+	Status string
+}
+
 /*
 Encapsulates information require to draw a row of information.
 
