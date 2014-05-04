@@ -18,13 +18,8 @@ var _ = Describe("Navigator", func() {
 
 	BeforeEach(func() {
 		originalPath, _ = os.Getwd()
-		navigator = directory.NewNavigator(originalPath)
-	})
-
-	Describe("NewNavigator", func() {
-		It("sets the current path using its path argument", func() {
-			Expect(navigator.CurrentPath()).To(Equal(originalPath))
-		})
+		navigator = new(directory.Navigator)
+		navigator.SetWorkingDirectory(originalPath)
 	})
 
 	Describe("SetWorkingDirectory", func() {

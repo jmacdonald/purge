@@ -16,11 +16,38 @@ type Navigator struct {
 	viewDataIndices [2]int
 }
 
-// NewNavigator constructs a new navigator object.
-func NewNavigator(path string) (navigator *Navigator) {
-	navigator = new(Navigator)
+// NewNavigator constructs a new navigator object and waits indefinitely
+// for commands sent to it. It sends an updated buffer whenever the
+// navigator changes state.
+// This function is meant to be run in a goroutine.
+func NewNavigator(path string, commands <-chan string, buffers chan<- *view.Buffer) {
+	navigator := new(Navigator)
+
+	// Set the initial working directory using
+	// the path passed in as an argument.
 	navigator.SetWorkingDirectory(path)
-	return
+
+	for {
+		// Wait for a command to arrive.
+		command := <- commands
+
+		// Invoke the command on the navigator.
+		switch command {
+		case "SelectNextEntry":
+			navigator.SelectNextEntry()
+		case "SelectPreviousEntry":
+			navigator.SelectPreviousEntry()
+		case "IntoSelectedEntry":
+			navigator.IntoSelectedEntry()
+		case "ToParentDirectory":
+			navigator.ToParentDirectory()
+		case "RemoveSelectedEntry":
+			navigator.RemoveSelectedEntry()
+		}
+
+		// Refresh the view.
+		buffers <- navigator.View(view.Height())
+	}
 }
 
 // Returns the navigator's current directory path.
