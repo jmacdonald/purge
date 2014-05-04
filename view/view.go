@@ -27,49 +27,47 @@ type Row struct {
 	Colour    bool
 }
 
-/*
-Construct a view that will listen for and render buffers sent to it.
-*/
-func New(buffers <-chan *Buffer, exit <-chan bool, complete chan<- bool) {
-	// Set up the terminal screen.
+// Initialize prepares the screen for rendering, and should
+// only be run once, before constructing a new view.
+func Initialize() {
 	err := termbox.Init()
 	if err != nil {
 		panic(err)
 	}
+}
 
-	// Signal the main process that we're ready.
-	complete <- true
+// Close is used to relinquish the screen so that
+// it can be used after the program exits.
+func Close() {
+	termbox.Close()
+}
 
+/*
+Construct a view that will listen for and render buffers sent to it.
+Initialize and Close must be called before and after this function,
+respectively.
+*/
+func New(buffers <-chan *Buffer) {
 	for {
-		select {
-		case buffer := <-buffers:
+		// Wait for a buffer.
+		buffer := <-buffers
 
-			// Refresh the contents of the screen.
-			err := termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
-			if err != nil {
-				return
-			}
-
-			// Render the source one row at a time.
-			for index, row := range buffer.Rows {
-				renderRow(row, index)
-			}
-
-			// Render the source's status string.
-			renderStatus(buffer.Status)
-
-			// Draw the contents to the screen.
-			termbox.Flush()
-		case <-exit:
-			// Clean up the display before exiting.
-			termbox.Close()
-
-			// Signal the main process that we're finished.
-			complete <- true
-
-			// Exit the main view loop.
-			break
+		// Refresh the contents of the screen.
+		err := termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
+		if err != nil {
+			return
 		}
+
+		// Render the source one row at a time.
+		for index, row := range buffer.Rows {
+			renderRow(row, index)
+		}
+
+		// Render the source's status string.
+		renderStatus(buffer.Status)
+
+		// Draw the contents to the screen.
+		termbox.Flush()
 	}
 }
 
