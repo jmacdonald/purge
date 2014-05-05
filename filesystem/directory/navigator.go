@@ -27,6 +27,9 @@ func NewNavigator(path string, commands <-chan string, buffers chan<- *view.Buff
 	// the path passed in as an argument.
 	navigator.SetWorkingDirectory(path)
 
+	// Refresh the view.
+	buffers <- navigator.View(view.Height())
+
 	for {
 		// Wait for a command to arrive.
 		command := <- commands
