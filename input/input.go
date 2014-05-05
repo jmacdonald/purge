@@ -8,13 +8,13 @@ import (
 )
 
 // Define a map to translate keystrokes into commands.
-Map := map[rune]string {
+var Map = map[rune]string {
 	'j': "SelectNextEntry",
 	'k': "SelectPreviousEntry",
 	'\r': "IntoSelectedEntry",
 	'h': "ToParentDirectory",
 	'x': "RemoveSelectedEntry",
-	'q': "Quit"
+	'q': "Quit",
 }
 
 // Navigator defines the interface expected by the input package,
