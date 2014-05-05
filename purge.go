@@ -16,33 +16,36 @@ func main() {
 	view.Initialize()
 	defer view.Close()
 
-	// Initialize a navigator in the current directory.
+	// Create a command channel that we'll use to
+	// communicate commands to the navigator.
+	commands := make(chan string)
+
+	// Create a buffer channel that the view will
+	// use to push updates to the view after state changes.
+	buffers := make(chan *view.Buffer)
+
+	// Start the view in a goroutine.
+	go view.New(buffers)
+
 	currentPath, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
-	nav := directory.NewNavigator(currentPath)
-
-	// Create a buffer channel with which we'll
-	// communicate with the view goroutine.
-	viewBuffers := make(chan *view.Buffer)
-
-	// Start the view in a goroutine.
-	go view.New(viewBuffers, exit, complete)
+	go directory.NewNavigator(currentPath, commands, buffers)
 
 	// main application loop
 	for {
 		// Read a character from STDIN.
 		character := input.Read(os.Stdin)
 
-		// Invoke the correspoding navigator action,
-		// and exit the main loop if it returns true (exit request).
-		if input.Map(character, nav) {
-			// Break out of the main application loop.
+		// Map the character to its corresponding command.
+		command := input.Map[character]
+
+		if command == "Quit" {
 			break
 		}
 
-		// Render the updated state.
-		viewBuffers <- nav.View(view.Height())
+		// Send the command along to the navigator.
+		commands <- command
 	}
 }
