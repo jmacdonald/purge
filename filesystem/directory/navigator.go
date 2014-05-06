@@ -3,6 +3,7 @@ package directory
 import (
 	"errors"
 	"github.com/jmacdonald/purge/view"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -14,6 +15,7 @@ type Navigator struct {
 	selectedIndex   int
 	entries         []*Entry
 	viewDataIndices [2]int
+	view            chan<- *view.Buffer
 }
 
 // NewNavigator constructs a new navigator object and waits indefinitely
@@ -23,16 +25,16 @@ type Navigator struct {
 func NewNavigator(path string, commands <-chan string, buffers chan<- *view.Buffer) {
 	navigator := new(Navigator)
 
+	// Link the navigator up to the view.
+	navigator.view = buffers
+
 	// Set the initial working directory using
 	// the path passed in as an argument.
 	navigator.SetWorkingDirectory(path)
 
-	// Refresh the view.
-	buffers <- navigator.View(view.Height())
-
 	for {
 		// Wait for a command to arrive.
-		command := <- commands
+		command := <-commands
 
 		// Invoke the command on the navigator.
 		switch command {
@@ -97,14 +99,64 @@ func (navigator *Navigator) SetWorkingDirectory(path string) (error error) {
 		}
 
 		navigator.currentPath = path
-		navigator.entries = Entries(path)
 		navigator.selectedIndex = 0
 		navigator.viewDataIndices = [2]int{0, 0}
+		navigator.populateEntries()
 	} else if error == nil {
 		error = errors.New("path is not a directory")
 	}
 
 	return
+}
+
+func (navigator *Navigator) populateEntries() {
+	var size int64
+	var directorySizeChannel chan *EntrySize
+	var asyncSizeCount int
+
+	// Read the directory entries.
+	dirEntries, _ := ioutil.ReadDir(navigator.currentPath)
+	navigator.entries = make([]*Entry, len(dirEntries))
+
+	// Allocate a buffered channel on which we'll receive
+	// directory sizes from size-calculating goroutines.
+	directorySizeChannel = make(chan *EntrySize, len(dirEntries))
+
+	for index, entry := range dirEntries {
+		entryInfo, _ := os.Stat(navigator.currentPath + "/" + entry.Name())
+
+		// Figure out the entry's size differently
+		// depending on whether or not it's a directory.
+		if entryInfo.IsDir() {
+			// Calculate the directory's size asynchronously, passing the current
+			// index so that we know where to put the result when we receive it later on.
+			go Size(navigator.currentPath+"/"+entry.Name(), index, directorySizeChannel)
+			asyncSizeCount++
+		} else {
+			size = entryInfo.Size()
+		}
+
+		// Store the entry details.
+		navigator.entries[index] = &Entry{Name: entry.Name(), Size: size, IsDirectory: entryInfo.IsDir()}
+	}
+
+	// Update the view, since we have sizes for files.
+	navigator.view <- navigator.View(view.Height())
+
+	// Listen for the results of the async size calculations.
+	for i := 0; i < asyncSizeCount; i++ {
+		// Read a directory size from the channel.
+		directorySize := <-directorySizeChannel
+
+		// Update the stored entry size.
+		navigator.entries[directorySize.Index].Size = directorySize.Size
+
+		// Update the view, since we have another directory size.
+		navigator.view <- navigator.View(view.Height())
+	}
+
+	// Sort the entries, casting them to their sortable equivalent.
+	// sort.Sort(sortableEntries(entries))
 }
 
 // Moves the selectedIndex to the next entry in the
@@ -134,10 +186,10 @@ func (navigator *Navigator) RemoveSelectedEntry() error {
 	err := os.RemoveAll(navigator.CurrentPath() + "/" + navigator.SelectedEntry().Name)
 	if err == nil {
 		if navigator.selectedIndex == len(navigator.entries)-1 {
-			navigator.selectedIndex = len(navigator.entries)-2
+			navigator.selectedIndex = len(navigator.entries) - 2
 
 			// Trim the last entry off of the slice
-			navigator.entries = navigator.entries[0:navigator.selectedIndex+1]
+			navigator.entries = navigator.entries[0 : navigator.selectedIndex+1]
 		} else {
 			// Create a new slice of entries by combining slices surrounding the deleted entry.
 			navigator.entries = append(navigator.entries[0:navigator.selectedIndex],
@@ -158,7 +210,7 @@ func (navigator *Navigator) ToParentDirectory() error {
 }
 
 // Generates a slice of rows with all of the data required for display.
-func (navigator *Navigator) View(maxRows int) (*view.Buffer) {
+func (navigator *Navigator) View(maxRows int) *view.Buffer {
 	var start, end, size int
 
 	// Return the current directory path as the status.
@@ -178,7 +230,7 @@ func (navigator *Navigator) View(maxRows int) (*view.Buffer) {
 		return &view.Buffer{Rows: viewData, Status: status}
 	}
 
-	// Deleting an entry can result in the cached view range indices 
+	// Deleting an entry can result in the cached view range indices
 	// being out of bounds; correct that if it has occurred.
 	if navigator.viewDataIndices[1] > entryCount {
 		navigator.viewDataIndices[1] = entryCount
