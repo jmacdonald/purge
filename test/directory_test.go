@@ -38,58 +38,6 @@ var _ = Describe("Directory", func() {
 			})
 		})
 	})
-
-	Describe("Entries", func() {
-		It("returns the correct number of entries", func() {
-			dir, _ := os.Getwd()
-			Expect(len(directory.Entries(dir + "/sample"))).To(Equal(4))
-		})
-
-		It("returns the proper names", func() {
-			dir, _ := os.Getwd()
-			entries := directory.Entries(dir + "/sample")
-			Expect(contains(entries, "directory")).To(BeTrue())
-			Expect(contains(entries, "file")).To(BeTrue())
-		})
-
-		It("returns the proper sizes", func() {
-			dir, _ := os.Getwd()
-			entries := directory.Entries(dir + "/sample")
-			for _, entry := range entries {
-				entryInfo, _ := os.Stat(dir + "/sample/" + entry.Name)
-
-				if entryInfo.IsDir() {
-					result := make(chan *directory.EntrySize)
-					go directory.Size(dir+"/sample/"+entry.Name, 0, result)
-					Expect(entry.Size).To(Equal((<-result).Size))
-				} else {
-					Expect(entry.Size).To(Equal(entryInfo.Size()))
-				}
-			}
-		})
-
-		It("returns the proper directory statuses", func() {
-			dir, _ := os.Getwd()
-			entries := directory.Entries(dir + "/sample")
-			for _, entry := range entries {
-				fileInfo, _ := os.Stat(dir + "/sample/" + entry.Name)
-				Expect(entry.IsDirectory).To(Equal(fileInfo.IsDir()))
-			}
-		})
-
-		It("returns the entries sorted by size (largest to smallest)", func() {
-			dir, _ := os.Getwd()
-			entries := directory.Entries(dir + "/sample")
-
-			// Collect the entry names.
-			entry_names := make([]string, len(entries), len(entries))
-			for index, entry := range entries {
-				entry_names[index] = entry.Name
-			}
-
-			Expect(entry_names).To(Equal([]string{"directory", "file", "small_file", "empty_file"}))
-		})
-	})
 })
 
 func contains(entries []*directory.Entry, value string) bool {

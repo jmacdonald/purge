@@ -9,7 +9,6 @@ package directory
 import (
 	"io/ioutil"
 	"os"
-	"sort"
 )
 
 // Structure representing a directory entry.
@@ -74,52 +73,4 @@ func Size(path string, index int, entrySizeChannel chan *EntrySize) {
 
 	// Send the entry size on to the return channel.
 	entrySizeChannel <- &EntrySize{Index: index, Size: size}
-}
-
-// Returns a list of entries (and their sizes) for the given
-// path. The current and parent (./..) entries are not included.
-func Entries(path string) (entries []*Entry) {
-	var size int64
-	var directorySizeChannel chan *EntrySize
-	var asyncSizeCount int
-
-	// Read the directory entries.
-	dirEntries, _ := ioutil.ReadDir(path)
-	entries = make([]*Entry, len(dirEntries))
-
-	// Allocate a buffered channel on which we'll receive
-	// directory sizes from size-calculating goroutines.
-	directorySizeChannel = make(chan *EntrySize, len(dirEntries))
-
-	for index, entry := range dirEntries {
-		entryInfo, _ := os.Stat(path + "/" + entry.Name())
-
-		// Figure out the entry's size differently
-		// depending on whether or not it's a directory.
-		if entryInfo.IsDir() {
-			// Calculate the directory's size asynchronously, passing the current
-			// index so that we know where to put the result when we receive it later on.
-			go Size(path+"/"+entry.Name(), index, directorySizeChannel)
-			asyncSizeCount++
-		} else {
-			size = entryInfo.Size()
-		}
-
-		// Store the entry details.
-		entries[index] = &Entry{Name: entry.Name(), Size: size, IsDirectory: entryInfo.IsDir()}
-	}
-
-	// Listen for the results of the async size calculations.
-	for i := 0; i < asyncSizeCount; i++ {
-		// Read a directory size from the channel.
-		directorySize := <-directorySizeChannel
-
-		// Update the stored entry size.
-		entries[directorySize.Index].Size = directorySize.Size
-	}
-
-	// Sort the entries, casting them to their sortable equivalent.
-	sort.Sort(sortableEntries(entries))
-
-	return
 }
