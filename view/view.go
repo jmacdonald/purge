@@ -128,7 +128,13 @@ func Height() int {
 	// height, so that we have room to render a status bar.
 	_, height := termbox.Size()
 
-	return height - 1
+	// If for some reason the height is zero or less,
+	// just return zero to prevent runtime panics.
+	if height-1 <= 0 {
+		return 0
+	} else {
+		return height - 1
+	}
 }
 
 /*
