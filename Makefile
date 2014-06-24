@@ -1,3 +1,3 @@
 all:
-	cd test && go test
+	ginkgo -r
 	go build
