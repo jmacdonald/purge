@@ -16,9 +16,9 @@ func main() {
 	view.Initialize()
 	defer view.Close()
 
-	// Create a command channel that we'll use to
-	// communicate commands to the navigator.
-	commands := make(chan string)
+	// Create a command channel that we'll use
+	// to communicate with the navigator.
+	navigator := make(chan string)
 
 	// Create a buffer channel that the navigator will
 	// use to push updates to the view after state changes.
@@ -32,7 +32,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	go directory.NewNavigator(currentPath, commands, buffers)
+	go directory.NewNavigator(currentPath, navigator, buffers)
 
 	// Listen for user input, relaying the
 	// appropriate commands to the navigator.
@@ -49,6 +49,6 @@ func main() {
 		}
 
 		// Send the command along to the navigator.
-		commands <- command
+		navigator <- command
 	}
 }
