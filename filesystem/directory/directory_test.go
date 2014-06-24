@@ -1,24 +1,29 @@
-package test
+package directory
 
 import (
-	"github.com/jmacdonald/purge/filesystem/directory"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"os"
+	"testing"
 )
+
+func TestDirectory(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Directory Suite")
+}
 
 var _ = Describe("Directory", func() {
 	Describe("Size", func() {
-		var result chan *directory.EntrySize
+		var result chan *EntrySize
 		var index int
 
 		Context("when passed a directory path and an index", func() {
 			BeforeEach(func() {
-				result = make(chan *directory.EntrySize)
+				result = make(chan *EntrySize)
 				dir, _ := os.Getwd()
 				index = 4
 
-				go directory.Size(dir+"/sample", index, result)
+				go Size(dir+"/sample", index, result)
 			})
 
 			It("calculates the size of the directory", func(done Done) {
@@ -40,7 +45,7 @@ var _ = Describe("Directory", func() {
 	})
 })
 
-func contains(entries []*directory.Entry, value string) bool {
+func contains(entries []*Entry, value string) bool {
 	for _, entry := range entries {
 		if entry.Name == value {
 			return true

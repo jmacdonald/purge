@@ -1,7 +1,6 @@
 package input
 
 import (
-	"github.com/jmacdonald/purge/test/double"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"testing"
@@ -12,9 +11,17 @@ func TestInput(t *testing.T) {
 	RunSpecs(t, "Input Suite")
 }
 
+// Alias the string type to create a fake data source
+type Reader string
+
+// Implement the Reader interface, as required by input.go
+func (s Reader) Read(target []byte) (int, error) {
+	return copy(target, s), nil
+}
+
 var _ = Describe("Input", func() {
 	Describe("Read", func() {
-		var data double.Reader
+		var data Reader
 		var result rune
 
 		JustBeforeEach(func() {
