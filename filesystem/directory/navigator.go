@@ -137,7 +137,7 @@ func (navigator *Navigator) populateEntries() {
 		}
 
 		// Store the entry details.
-		navigator.entries[index] = &Entry{Name: entry.Name(), Size: size, IsDirectory: entryInfo.IsDir()}
+		navigator.entries[index] = &Entry{Name: entry.Name(), Size: size, IsDirectory: entryInfo.IsDir(), SizeCalculated: !entryInfo.IsDir()}
 	}
 
 	// Update the view, since we have sizes for files.
@@ -148,8 +148,9 @@ func (navigator *Navigator) populateEntries() {
 		// Read a directory size from the channel.
 		directorySize := <-directorySizeChannel
 
-		// Update the stored entry size.
+		// Update the stored entry size and flag it as calculated.
 		navigator.entries[directorySize.Index].Size = directorySize.Size
+		navigator.entries[directorySize.Index].SizeCalculated = true
 
 		// Update the view, since we have another directory size.
 		navigator.view <- navigator.View(view.Height())
@@ -212,6 +213,7 @@ func (navigator *Navigator) ToParentDirectory() error {
 // Generates a slice of rows with all of the data required for display.
 func (navigator *Navigator) View(maxRows int) *view.Buffer {
 	var start, end, size int
+	var entrySize string
 
 	// Return the current directory path as the status.
 	status := navigator.CurrentPath()
@@ -279,7 +281,13 @@ func (navigator *Navigator) View(maxRows int) *view.Buffer {
 			name = entry.Name
 		}
 
-		viewData[i] = view.Row{name, view.Size(entry.Size), highlight, entry.IsDirectory}
+		if entry.SizeCalculated {
+			entrySize = view.Size(entry.Size)
+		} else {
+			entrySize = "Calculating..."
+		}
+
+		viewData[i] = view.Row{name, entrySize, highlight, entry.IsDirectory}
 	}
 
 	// Store the indices used to generate the view data.

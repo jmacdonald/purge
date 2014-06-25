@@ -13,9 +13,10 @@ import (
 
 // Structure representing a directory entry.
 type Entry struct {
-	Name        string
-	Size        int64
-	IsDirectory bool
+	Name           string
+	Size           int64
+	IsDirectory    bool
+	SizeCalculated bool
 }
 
 type EntrySize struct {
