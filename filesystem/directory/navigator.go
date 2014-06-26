@@ -124,7 +124,6 @@ func (navigator *Navigator) SetWorkingDirectory(path string) (error error) {
 
 func (navigator *Navigator) populateEntries() {
 	var size int64
-	var asyncSizeCount int
 
 	// Read the directory entries.
 	dirEntries, _ := ioutil.ReadDir(navigator.currentPath)
@@ -139,7 +138,6 @@ func (navigator *Navigator) populateEntries() {
 			// Calculate the directory's size asynchronously, passing the current
 			// index so that we know where to put the result when we receive it later on.
 			go Size(navigator.currentPath+"/"+entry.Name(), index, navigator.DirectorySizes)
-			asyncSizeCount++
 		} else {
 			size = entryInfo.Size()
 		}
