@@ -29,10 +29,6 @@ func NewNavigator(path string, commands <-chan string, buffers chan<- *view.Buff
 	// Link the navigator up to the view.
 	navigator.view = buffers
 
-	// Allocate a buffered channel on which we'll receive
-	// directory sizes from size-calculating goroutines.
-	navigator.DirectorySizes = make(chan *EntrySize, 10)
-
 	// Set the initial working directory using
 	// the path passed in as an argument.
 	navigator.SetWorkingDirectory(path)
@@ -128,6 +124,10 @@ func (navigator *Navigator) populateEntries() {
 	// Read the directory entries.
 	dirEntries, _ := ioutil.ReadDir(navigator.currentPath)
 	navigator.entries = make([]*Entry, len(dirEntries))
+
+	// Allocate a buffered channel on which we'll receive
+	// directory sizes from size-calculating goroutines.
+	navigator.DirectorySizes = make(chan *EntrySize, len(dirEntries))
 
 	for index, entry := range dirEntries {
 		entryInfo, _ := os.Stat(navigator.currentPath + "/" + entry.Name())
