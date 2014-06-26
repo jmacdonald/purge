@@ -16,6 +16,7 @@ type Navigator struct {
 	entries         []*Entry
 	viewDataIndices [2]int
 	view            chan<- *view.Buffer
+	DirectorySizes  chan *EntrySize
 }
 
 // NewNavigator constructs a new navigator object and waits indefinitely
@@ -28,30 +29,42 @@ func NewNavigator(path string, commands <-chan string, buffers chan<- *view.Buff
 	// Link the navigator up to the view.
 	navigator.view = buffers
 
+	// Allocate a buffered channel on which we'll receive
+	// directory sizes from size-calculating goroutines.
+	navigator.DirectorySizes = make(chan *EntrySize, 10)
+
 	// Set the initial working directory using
 	// the path passed in as an argument.
 	navigator.SetWorkingDirectory(path)
 
 	for {
-		// Wait for a command to arrive.
-		command := <-commands
+		select {
+		case command := <-commands: // A command has arrived.
+			// Invoke the command on the navigator.
+			switch command {
+			case "SelectNextEntry":
+				navigator.SelectNextEntry()
+			case "SelectPreviousEntry":
+				navigator.SelectPreviousEntry()
+			case "IntoSelectedEntry":
+				navigator.IntoSelectedEntry()
+			case "ToParentDirectory":
+				navigator.ToParentDirectory()
+			case "RemoveSelectedEntry":
+				navigator.RemoveSelectedEntry()
+			}
 
-		// Invoke the command on the navigator.
-		switch command {
-		case "SelectNextEntry":
-			navigator.SelectNextEntry()
-		case "SelectPreviousEntry":
-			navigator.SelectPreviousEntry()
-		case "IntoSelectedEntry":
-			navigator.IntoSelectedEntry()
-		case "ToParentDirectory":
-			navigator.ToParentDirectory()
-		case "RemoveSelectedEntry":
-			navigator.RemoveSelectedEntry()
+			// Refresh the view.
+			buffers <- navigator.View(view.Height())
+
+		case directorySize := <-navigator.DirectorySizes: // A directory size calculation has completed.
+			// Update the stored entry size and flag it as calculated.
+			navigator.entries[directorySize.Index].Size = directorySize.Size
+			navigator.entries[directorySize.Index].SizeCalculated = true
+
+			// Update the view, since we have another directory size.
+			navigator.view <- navigator.View(view.Height())
 		}
-
-		// Refresh the view.
-		buffers <- navigator.View(view.Height())
 	}
 }
 
@@ -111,16 +124,11 @@ func (navigator *Navigator) SetWorkingDirectory(path string) (error error) {
 
 func (navigator *Navigator) populateEntries() {
 	var size int64
-	var directorySizeChannel chan *EntrySize
 	var asyncSizeCount int
 
 	// Read the directory entries.
 	dirEntries, _ := ioutil.ReadDir(navigator.currentPath)
 	navigator.entries = make([]*Entry, len(dirEntries))
-
-	// Allocate a buffered channel on which we'll receive
-	// directory sizes from size-calculating goroutines.
-	directorySizeChannel = make(chan *EntrySize, len(dirEntries))
 
 	for index, entry := range dirEntries {
 		entryInfo, _ := os.Stat(navigator.currentPath + "/" + entry.Name())
@@ -130,7 +138,7 @@ func (navigator *Navigator) populateEntries() {
 		if entryInfo.IsDir() {
 			// Calculate the directory's size asynchronously, passing the current
 			// index so that we know where to put the result when we receive it later on.
-			go Size(navigator.currentPath+"/"+entry.Name(), index, directorySizeChannel)
+			go Size(navigator.currentPath+"/"+entry.Name(), index, navigator.DirectorySizes)
 			asyncSizeCount++
 		} else {
 			size = entryInfo.Size()
@@ -142,19 +150,6 @@ func (navigator *Navigator) populateEntries() {
 
 	// Update the view, since we have sizes for files.
 	navigator.view <- navigator.View(view.Height())
-
-	// Listen for the results of the async size calculations.
-	for i := 0; i < asyncSizeCount; i++ {
-		// Read a directory size from the channel.
-		directorySize := <-directorySizeChannel
-
-		// Update the stored entry size and flag it as calculated.
-		navigator.entries[directorySize.Index].Size = directorySize.Size
-		navigator.entries[directorySize.Index].SizeCalculated = true
-
-		// Update the view, since we have another directory size.
-		navigator.view <- navigator.View(view.Height())
-	}
 
 	// Sort the entries, casting them to their sortable equivalent.
 	// sort.Sort(sortableEntries(entries))
