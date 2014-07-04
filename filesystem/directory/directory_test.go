@@ -69,10 +69,13 @@ var _ = Describe("Navigator", func() {
 		navigator = new(Navigator)
 		viewBuffer = make(chan<- *view.Buffer, 10)
 		navigator.view = viewBuffer
-		navigator.SetWorkingDirectory(originalPath)
 	})
 
 	Describe("SetWorkingDirectory", func() {
+		BeforeEach(func() {
+			navigator.SetWorkingDirectory(originalPath)
+		})
+
 		// Change the working directory right before every test.
 		JustBeforeEach(func() {
 			error = navigator.SetWorkingDirectory(path)
@@ -178,6 +181,10 @@ var _ = Describe("Navigator", func() {
 	})
 
 	Describe("SelectedEntry", func() {
+		BeforeEach(func() {
+			navigator.SetWorkingDirectory(originalPath)
+		})
+
 		Context("the second entry is selected", func() {
 			BeforeEach(func() {
 				navigator.SelectNextEntry()
@@ -203,43 +210,11 @@ var _ = Describe("Navigator", func() {
 		})
 	})
 
-	Describe("SelectFirstEntry", func() {
-		JustBeforeEach(func() {
-			navigator.SelectFirstEntry()
-		})
-
-		Context("directory has never been set", func() {
-			It("does not change the selected index", func() {
-				Expect(navigator.SelectedIndex()).To(BeZero())
-			})
-		})
-
-		Context("directory has been set and has entries", func() {
-			BeforeEach(func() {
-				path, _ = os.Getwd()
-				navigator.SetWorkingDirectory(path)
-			})
-
-			It("does not change the selected index", func() {
-				Expect(navigator.SelectedIndex()).To(BeZero())
-			})
-
-			Context("last entry is selected", func() {
-				BeforeEach(func() {
-					// Call SelectNextEntry() until the last entry is selected.
-					for len(navigator.Entries())-navigator.SelectedIndex() > 1 {
-						navigator.SelectNextEntry()
-					}
-				})
-
-				It("resets the selected index to zero", func() {
-					Expect(navigator.SelectedIndex()).To(BeZero())
-				})
-			})
-		})
-	})
-
 	Describe("SelectNextEntry", func() {
+		BeforeEach(func() {
+			navigator.SetWorkingDirectory(originalPath)
+		})
+
 		JustBeforeEach(func() {
 			navigator.SelectNextEntry()
 		})
@@ -325,6 +300,42 @@ var _ = Describe("Navigator", func() {
 		})
 	})
 
+	Describe("SelectFirstEntry", func() {
+		JustBeforeEach(func() {
+			navigator.SelectFirstEntry()
+		})
+
+		Context("directory has never been set", func() {
+			It("does not change the selected index", func() {
+				Expect(navigator.SelectedIndex()).To(BeZero())
+			})
+		})
+
+		Context("directory has been set and has entries", func() {
+			BeforeEach(func() {
+				path, _ = os.Getwd()
+				navigator.SetWorkingDirectory(path)
+			})
+
+			It("does not change the selected index", func() {
+				Expect(navigator.SelectedIndex()).To(BeZero())
+			})
+
+			Context("last entry is selected", func() {
+				BeforeEach(func() {
+					// Call SelectNextEntry() until the last entry is selected.
+					for len(navigator.Entries())-navigator.SelectedIndex() > 1 {
+						navigator.SelectNextEntry()
+					}
+				})
+
+				It("resets the selected index to zero", func() {
+					Expect(navigator.SelectedIndex()).To(BeZero())
+				})
+			})
+		})
+	})
+
 	Describe("IntoSelectedEntry", func() {
 		JustBeforeEach(func() {
 			error = navigator.IntoSelectedEntry()
@@ -372,6 +383,10 @@ var _ = Describe("Navigator", func() {
 	Describe("RemoveSelectedEntry", func() {
 		var file_name, directory_name string
 		var entryCount int
+
+		BeforeEach(func() {
+			navigator.SetWorkingDirectory(originalPath)
+		})
 
 		JustBeforeEach(func() {
 			error = navigator.RemoveSelectedEntry()
@@ -485,6 +500,10 @@ var _ = Describe("Navigator", func() {
 	Describe("ToParentDirectory", func() {
 		var parent_path string
 
+		BeforeEach(func() {
+			navigator.SetWorkingDirectory(originalPath)
+		})
+
 		JustBeforeEach(func() {
 			error = navigator.ToParentDirectory()
 		})
@@ -506,6 +525,10 @@ var _ = Describe("Navigator", func() {
 	Describe("View", func() {
 		var buffer *view.Buffer
 		var maxRows int
+
+		BeforeEach(func() {
+			navigator.SetWorkingDirectory(originalPath)
+		})
 
 		JustBeforeEach(func() {
 			buffer = navigator.View(maxRows)
