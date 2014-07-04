@@ -2,11 +2,11 @@ package directory
 
 import (
 	"errors"
+	"fmt"
 	"github.com/jmacdonald/purge/view"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"fmt"
 )
 
 // Structure used to keep state when
@@ -163,16 +163,18 @@ func (navigator *Navigator) populateEntries() {
 	// sort.Sort(sortableEntries(entries))
 }
 
-// Moves the selectedIndex to the first entry in the list.
-func (navigator *Navigator) SelectFirstEntry() {
-	navigator.selectedIndex = 0
-}
-
 // Moves the selectedIndex to the next entry in the
 // list, if the current selection isn't already at the end.
 func (navigator *Navigator) SelectNextEntry() {
 	if len(navigator.entries)-navigator.selectedIndex > 1 {
 		navigator.selectedIndex++
+	}
+}
+
+// Moves the selectedIndex to the last entry in the list.
+func (navigator *Navigator) SelectLastEntry() {
+	if len(navigator.entries) > 0 {
+		navigator.selectedIndex = len(navigator.entries) - 1
 	}
 }
 
@@ -182,6 +184,11 @@ func (navigator *Navigator) SelectPreviousEntry() {
 	if navigator.selectedIndex > 0 {
 		navigator.selectedIndex--
 	}
+}
+
+// Moves the selectedIndex to the first entry in the list.
+func (navigator *Navigator) SelectFirstEntry() {
+	navigator.selectedIndex = 0
 }
 
 // Navigates into the selected entry, if it is a directory.

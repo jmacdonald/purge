@@ -259,6 +259,42 @@ var _ = Describe("Navigator", func() {
 		})
 	})
 
+	Describe("SelectLastEntry", func() {
+		JustBeforeEach(func() {
+			navigator.SelectLastEntry()
+		})
+
+		Context("directory has never been set", func() {
+			It("does not change the selected index", func() {
+				Expect(navigator.SelectedIndex()).To(BeZero())
+			})
+		})
+
+		Context("directory has been set and has entries", func() {
+			BeforeEach(func() {
+				path, _ = os.Getwd()
+				navigator.SetWorkingDirectory(path)
+			})
+
+			It("moves the selected index to the last entry", func() {
+				Expect(navigator.SelectedIndex()).To(Equal(len(navigator.entries) - 1))
+			})
+
+			Context("last entry is selected", func() {
+				BeforeEach(func() {
+					// Call SelectNextEntry() until the last entry is selected.
+					for len(navigator.Entries())-navigator.SelectedIndex() > 1 {
+						navigator.SelectNextEntry()
+					}
+				})
+
+				It("does not change the selected index", func() {
+					Expect(navigator.SelectedIndex()).To(Equal(len(navigator.entries) - 1))
+				})
+			})
+		})
+	})
+
 	Describe("SelectPreviousEntry", func() {
 		JustBeforeEach(func() {
 			navigator.SelectPreviousEntry()
@@ -535,7 +571,7 @@ var _ = Describe("Navigator", func() {
 		})
 
 		It("returns the current directory path as its status", func() {
-			Expect(buffer.Status).To(MatchRegexp(navigator.CurrentPath()+"( \\([0-9]{1,2}\\%\\))?"))
+			Expect(buffer.Status).To(MatchRegexp(navigator.CurrentPath() + "( \\([0-9]{1,2}\\%\\))?"))
 		})
 
 		Context("maxRows is set to 1", func() {
