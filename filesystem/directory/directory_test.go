@@ -512,7 +512,7 @@ var _ = Describe("Navigator", func() {
 		})
 
 		It("returns the current directory path as its status", func() {
-			Expect(buffer.Status).To(Equal(navigator.CurrentPath()))
+			Expect(buffer.Status).To(MatchRegexp(navigator.CurrentPath()+"( \\([0-9]{1,2}\\%\\))?"))
 		})
 
 		Context("maxRows is set to 1", func() {
