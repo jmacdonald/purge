@@ -13,6 +13,7 @@ var Map = map[rune]string {
 	'b': "SelectLastEntry",
 	'k': "SelectPreviousEntry",
 	't': "SelectFirstEntry",
+	's': "SortEntries",
 	'\r': "IntoSelectedEntry",
 	'h': "ToParentDirectory",
 	'x': "RemoveSelectedEntry",
@@ -26,6 +27,7 @@ type Navigator interface {
 	SelectLastEntry()
 	SelectPreviousEntry()
 	SelectFirstEntry()
+	SortEntries()
 	IntoSelectedEntry() error
 	ToParentDirectory() error
 	RemoveSelectedEntry() error
