@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 )
 
 // Structure used to keep state when
@@ -162,9 +163,11 @@ func (navigator *Navigator) populateEntries() {
 
 	// Update the view, since we have sizes for files.
 	navigator.view <- navigator.View(view.Height())
+}
 
+func (navigator *Navigator) SortEntries() {
 	// Sort the entries, casting them to their sortable equivalent.
-	// sort.Sort(sortableEntries(entries))
+	sort.Sort(sortableEntries(navigator.entries))
 }
 
 // Moves the selectedIndex to the next entry in the

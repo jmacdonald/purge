@@ -180,6 +180,22 @@ var _ = Describe("Navigator", func() {
 		})
 	})
 
+	Describe("SortEntries", func() {
+		BeforeEach(func() {
+			navigator.SetWorkingDirectory(originalPath + "/sample")
+		})
+
+		XIt("sorts entries by size", func() {
+			navigator.SortEntries()
+			entryNames := make([]string, len(navigator.entries))
+			for index, entry := range navigator.entries {
+				entryNames[index] = entry.Name
+			}
+
+			Expect(entryNames).To(Equal([]string{"directory", "file", "small_file", "empty_file"}))
+		})
+	})
+
 	Describe("SelectedEntry", func() {
 		BeforeEach(func() {
 			navigator.SetWorkingDirectory(originalPath)
