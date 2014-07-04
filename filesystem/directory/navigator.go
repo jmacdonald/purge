@@ -163,6 +163,11 @@ func (navigator *Navigator) populateEntries() {
 	// sort.Sort(sortableEntries(entries))
 }
 
+// Moves the selectedIndex to the first entry in the list.
+func (navigator *Navigator) SelectFirstEntry() {
+	navigator.selectedIndex = 0
+}
+
 // Moves the selectedIndex to the next entry in the
 // list, if the current selection isn't already at the end.
 func (navigator *Navigator) SelectNextEntry() {
