@@ -10,7 +10,9 @@ import (
 // Define a map to translate keystrokes into commands.
 var Map = map[rune]string {
 	'j': "SelectNextEntry",
+	'b': "SelectLastEntry",
 	'k': "SelectPreviousEntry",
+	't': "SelectFirstEntry",
 	'\r': "IntoSelectedEntry",
 	'h': "ToParentDirectory",
 	'x': "RemoveSelectedEntry",
@@ -21,7 +23,9 @@ var Map = map[rune]string {
 // so that navigator actions can be called based on input data.
 type Navigator interface {
 	SelectNextEntry()
+	SelectLastEntry()
 	SelectPreviousEntry()
+	SelectFirstEntry()
 	IntoSelectedEntry() error
 	ToParentDirectory() error
 	RemoveSelectedEntry() error

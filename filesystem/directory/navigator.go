@@ -42,8 +42,12 @@ func NewNavigator(path string, commands <-chan string, buffers chan<- *view.Buff
 			switch command {
 			case "SelectNextEntry":
 				navigator.SelectNextEntry()
+			case "SelectLastEntry":
+				navigator.SelectLastEntry()
 			case "SelectPreviousEntry":
 				navigator.SelectPreviousEntry()
+			case "SelectFirstEntry":
+				navigator.SelectFirstEntry()
 			case "IntoSelectedEntry":
 				navigator.IntoSelectedEntry()
 			case "ToParentDirectory":
