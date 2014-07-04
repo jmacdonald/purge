@@ -6,17 +6,19 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"fmt"
 )
 
 // Structure used to keep state when
 // navigating directories and their entries.
 type Navigator struct {
-	currentPath     string
-	selectedIndex   int
-	entries         []*Entry
-	viewDataIndices [2]int
-	view            chan<- *view.Buffer
-	DirectorySizes  chan *EntrySize
+	currentPath         string
+	selectedIndex       int
+	entries             []*Entry
+	viewDataIndices     [2]int
+	view                chan<- *view.Buffer
+	DirectorySizes      chan *EntrySize
+	pendingCalculations int
 }
 
 // NewNavigator constructs a new navigator object and waits indefinitely
@@ -57,6 +59,9 @@ func NewNavigator(path string, commands <-chan string, buffers chan<- *view.Buff
 			// Update the stored entry size and flag it as calculated.
 			navigator.entries[directorySize.Index].Size = directorySize.Size
 			navigator.entries[directorySize.Index].SizeCalculated = true
+
+			// Reduce this count so the view increases the completion percentage.
+			navigator.pendingCalculations--
 
 			// Update the view, since we have another directory size.
 			navigator.view <- navigator.View(view.Height())
@@ -129,12 +134,17 @@ func (navigator *Navigator) populateEntries() {
 	// directory sizes from size-calculating goroutines.
 	navigator.DirectorySizes = make(chan *EntrySize, len(dirEntries))
 
+	// Reset the number of pending calculations.
+	navigator.pendingCalculations = 0
+
 	for index, entry := range dirEntries {
 		entryInfo, _ := os.Stat(navigator.currentPath + "/" + entry.Name())
 
 		// Figure out the entry's size differently
 		// depending on whether or not it's a directory.
 		if entryInfo.IsDir() {
+			navigator.pendingCalculations++
+
 			// Calculate the directory's size asynchronously, passing the current
 			// index so that we know where to put the result when we receive it later on.
 			go Size(navigator.currentPath+"/"+entry.Name(), index, navigator.DirectorySizes)
@@ -210,6 +220,13 @@ func (navigator *Navigator) View(maxRows int) *view.Buffer {
 
 	// Return the current directory path as the status.
 	status := navigator.CurrentPath()
+
+	// Append a percentage to the status line, if
+	// we're still calculating directory sizes.
+	if navigator.pendingCalculations > 0 {
+		entryCount := len(navigator.entries)
+		status += fmt.Sprintf(" (%d%%)", (entryCount-navigator.pendingCalculations)*100/entryCount)
+	}
 
 	// Create a slice with a size that is the lesser of the entry count and maxRows.
 	entryCount := len(navigator.Entries())
