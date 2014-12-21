@@ -3,11 +3,13 @@ package directory
 import (
 	"errors"
 	"fmt"
-	"github.com/jmacdonald/purge/view"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
+	"syscall"
+
+	"github.com/jmacdonald/purge/view"
 )
 
 // Structure used to keep state when
@@ -325,4 +327,18 @@ func (navigator *Navigator) View(maxRows int) *view.Buffer {
 	navigator.viewDataIndices = [2]int{start, end}
 
 	return &view.Buffer{Rows: viewData, Status: status}
+}
+
+func (navigator *Navigator) totalBytes() uint64 {
+	stats := new(syscall.Statfs_t)
+	syscall.Statfs(navigator.currentPath, stats)
+
+	return stats.Blocks * uint64(stats.Bsize)
+}
+
+func (navigator *Navigator) availableBytes() uint64 {
+	stats := new(syscall.Statfs_t)
+	syscall.Statfs(navigator.currentPath, stats)
+
+	return stats.Bfree * uint64(stats.Bsize)
 }

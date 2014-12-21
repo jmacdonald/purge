@@ -1,11 +1,13 @@
 package directory
 
 import (
+	"os"
+	"syscall"
+	"testing"
+
 	"github.com/jmacdonald/purge/view"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"os"
-	"testing"
 )
 
 func TestDirectory(t *testing.T) {
@@ -811,6 +813,42 @@ var _ = Describe("Navigator", func() {
 			It("does not panic", func() {
 				Expect(func() { navigator.View(maxRows) }).ToNot(Panic())
 			})
+		})
+	})
+
+	Describe("totalBytes", func() {
+		var result uint64
+
+		BeforeEach(func() {
+			navigator.SetWorkingDirectory(originalPath)
+		})
+
+		JustBeforeEach(func() {
+			result = navigator.totalBytes()
+		})
+
+		It("returns the correct number of bytes", func() {
+			stats := new(syscall.Statfs_t)
+			syscall.Statfs(navigator.currentPath, stats)
+			Expect(result).To(Equal(stats.Blocks * uint64(stats.Bsize)))
+		})
+	})
+
+	Describe("availableBytes", func() {
+		var result uint64
+
+		BeforeEach(func() {
+			navigator.SetWorkingDirectory(originalPath)
+		})
+
+		JustBeforeEach(func() {
+			result = navigator.availableBytes()
+		})
+
+		It("returns the correct number of bytes", func() {
+			stats := new(syscall.Statfs_t)
+			syscall.Statfs(navigator.currentPath, stats)
+			Expect(result).To(Equal(stats.Bfree * uint64(stats.Bsize)))
 		})
 	})
 })
