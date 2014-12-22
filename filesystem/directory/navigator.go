@@ -242,13 +242,17 @@ func (navigator *Navigator) View(maxRows int) *view.Buffer {
 	var entrySize string
 
 	// Return the current directory path as the status.
-	status := navigator.CurrentPath()
+	status := [2]string{navigator.CurrentPath(), ""}
 
 	// Append a percentage to the status line, if
 	// we're still calculating directory sizes.
 	if navigator.pendingCalculations > 0 {
 		entryCount := len(navigator.entries)
-		status += fmt.Sprintf(" (%d%%)", (entryCount-navigator.pendingCalculations)*100/entryCount)
+		status[1] = fmt.Sprintf("(%d%%)", (entryCount-navigator.pendingCalculations)*100/entryCount)
+	} else {
+		avail := int64(navigator.availableBytes())
+		total := int64(navigator.totalBytes())
+		status[1] = fmt.Sprintf("%v of %v available (%v%% full)", view.Size(avail), view.Size(total), avail*100/total)
 	}
 
 	// Create a slice with a size that is the lesser of the entry count and maxRows.

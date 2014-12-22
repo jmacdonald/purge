@@ -1,6 +1,7 @@
 package directory
 
 import (
+	"fmt"
 	"os"
 	"syscall"
 	"testing"
@@ -588,10 +589,27 @@ var _ = Describe("Navigator", func() {
 			buffer = navigator.View(maxRows)
 		})
 
-		It("returns the current directory path as its status", func() {
-			Expect(buffer.Status).To(MatchRegexp(navigator.CurrentPath() + "( \\([0-9]{1,2}\\%\\))?"))
-		})
+		Describe("Status Line", func() {
+			Context("when all calculations have completed", func() {
+				BeforeEach(func() {
+					// FIXME: This calculation gets stuck at 75%.
+					// Hijack the navigator to simulate calculation completion.
+					navigator.pendingCalculations = 0
+				})
 
+				It("returns the current directory path as its first element", func() {
+					Expect(buffer.Status[0]).To(Equal(navigator.CurrentPath()))
+				})
+
+				It("returns disk/partition space statistics as its second element", func() {
+					avail := int64(navigator.availableBytes())
+					total := int64(navigator.totalBytes())
+					status := fmt.Sprintf("%v of %v available (%v%% full)", view.Size(avail), view.Size(total), avail*100/total)
+
+					Expect(buffer.Status[1]).To(Equal(status))
+				})
+			})
+		})
 		Context("maxRows is set to 1", func() {
 			BeforeEach(func() {
 				maxRows = 1

@@ -11,7 +11,7 @@ import "unicode/utf8"
 // Buffer encapsulates all of the data required to render the view.
 type Buffer struct {
 	Rows   []Row
-	Status string
+	Status [2]string
 }
 
 /*
@@ -98,7 +98,7 @@ func renderRow(row Row, rowNumber int) {
 }
 
 // Render a status message to the bottom of the screen.
-func renderStatus(status string) {
+func renderStatus(status [2]string) {
 	width, height := termbox.Size()
 
 	// Print the status to the bottom of the screen by stepping
@@ -111,8 +111,8 @@ func renderStatus(status string) {
 
 		// Decode the next rune and advance the offset by its length,
 		// or if we've already read the entire string, use a space instead.
-		if offset < len(status) {
-			character, size = utf8.DecodeRune([]byte(status)[offset:])
+		if offset < len(status[0]) {
+			character, size = utf8.DecodeRune([]byte(status[0])[offset:])
 			offset += size
 		} else {
 			character = ' '

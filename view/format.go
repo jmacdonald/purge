@@ -7,11 +7,11 @@ import (
 
 // Declare size interval constants.
 const (
-    _ = iota
-    KB float64 = 1 << (10*iota)
-    MB
-    GB
-    TB
+	_          = iota
+	KB float64 = 1 << (10 * iota)
+	MB
+	GB
+	TB
 )
 
 // Given a size in bytes, generates a presentable string
