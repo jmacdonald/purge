@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/jmacdonald/purge/filesystem/directory"
-	"github.com/jmacdonald/purge/input"
-	"github.com/jmacdonald/purge/view"
 	"os"
 	"runtime"
+
+	"github.com/jmacdonald/purge/filesystem/directory/navigator"
+	"github.com/jmacdonald/purge/input"
+	"github.com/jmacdonald/purge/view"
 )
 
 func main() {
@@ -18,7 +19,7 @@ func main() {
 
 	// Create a command channel that we'll use
 	// to communicate with the navigator.
-	navigator := make(chan string)
+	nav := make(chan string)
 
 	// Create a buffer channel that the navigator will
 	// use to push updates to the view after state changes.
@@ -32,7 +33,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	go directory.NewNavigator(currentPath, navigator, buffers)
+	go navigator.NewNavigator(currentPath, nav, buffers)
 
 	// Listen for user input, relaying the
 	// appropriate commands to the navigator.
@@ -49,6 +50,6 @@ func main() {
 		}
 
 		// Send the command along to the navigator.
-		navigator <- command
+		nav <- command
 	}
 }

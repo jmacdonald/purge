@@ -1,4 +1,4 @@
-package directory
+package navigator
 
 import (
 	"errors"
@@ -9,6 +9,7 @@ import (
 	"sort"
 	"syscall"
 
+	"github.com/jmacdonald/purge/filesystem/directory"
 	"github.com/jmacdonald/purge/view"
 )
 
@@ -17,10 +18,10 @@ import (
 type Navigator struct {
 	currentPath         string
 	selectedIndex       int
-	entries             []*Entry
+	entries             []*directory.Entry
 	viewDataIndices     [2]int
 	view                chan<- *view.Buffer
-	DirectorySizes      chan *EntrySize
+	DirectorySizes      chan *directory.EntrySize
 	pendingCalculations int
 }
 
@@ -90,12 +91,12 @@ func (navigator *Navigator) SelectedIndex() int {
 
 // Returns the navigator's current directory entries. This method does
 // not read from disk and may not accurately reflect filesystem contents.
-func (navigator *Navigator) Entries() []*Entry {
+func (navigator *Navigator) Entries() []*directory.Entry {
 	return navigator.entries
 }
 
 // Returns the navigator's currently selected entry.
-func (navigator *Navigator) SelectedEntry() *Entry {
+func (navigator *Navigator) SelectedEntry() *directory.Entry {
 	// Prevent an empty directory from accessing an out-of-bounds index.
 	if navigator.SelectedIndex() < len(navigator.Entries()) {
 		return navigator.Entries()[navigator.SelectedIndex()]
@@ -137,11 +138,11 @@ func (navigator *Navigator) populateEntries() {
 
 	// Read the directory entries.
 	dirEntries, _ := ioutil.ReadDir(navigator.currentPath)
-	navigator.entries = make([]*Entry, len(dirEntries))
+	navigator.entries = make([]*directory.Entry, len(dirEntries))
 
 	// Allocate a buffered channel on which we'll receive
 	// directory sizes from size-calculating goroutines.
-	navigator.DirectorySizes = make(chan *EntrySize, len(dirEntries))
+	navigator.DirectorySizes = make(chan *directory.EntrySize, len(dirEntries))
 
 	// Reset the number of pending calculations.
 	navigator.pendingCalculations = 0
@@ -156,13 +157,13 @@ func (navigator *Navigator) populateEntries() {
 
 			// Calculate the directory's size asynchronously, passing the current
 			// index so that we know where to put the result when we receive it later on.
-			go Size(navigator.currentPath+"/"+entry.Name(), index, navigator.DirectorySizes)
+			go directory.Size(navigator.currentPath+"/"+entry.Name(), index, navigator.DirectorySizes)
 		} else {
 			size = entryInfo.Size()
 		}
 
 		// Store the entry details.
-		navigator.entries[index] = &Entry{Name: entry.Name(), Size: size, IsDirectory: entryInfo.IsDir(), SizeCalculated: !entryInfo.IsDir()}
+		navigator.entries[index] = &directory.Entry{Name: entry.Name(), Size: size, IsDirectory: entryInfo.IsDir(), SizeCalculated: !entryInfo.IsDir()}
 	}
 
 	// Update the view, since we have sizes for files.
@@ -171,7 +172,7 @@ func (navigator *Navigator) populateEntries() {
 
 func (navigator *Navigator) SortEntries() {
 	// Sort the entries, casting them to their sortable equivalent.
-	sort.Sort(sortableEntries(navigator.entries))
+	sort.Sort(directory.SortableEntries(navigator.entries))
 }
 
 // Moves the selectedIndex to the next entry in the

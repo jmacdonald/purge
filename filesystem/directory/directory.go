@@ -26,16 +26,16 @@ type EntrySize struct {
 
 // Alias a slice of entries so that
 // we can implement sort.Interface.
-type sortableEntries []*Entry
+type SortableEntries []*Entry
 
 // Implement sort.Interface length function.
-func (e sortableEntries) Len() int {
+func (e SortableEntries) Len() int {
 	return len(e)
 }
 
 // Implement sort.Interface comparison function,
 // using the entry size as a comparator.
-func (e sortableEntries) Less(i, j int) bool {
+func (e SortableEntries) Less(i, j int) bool {
 	if e[i].Size > e[j].Size {
 		return true
 	} else {
@@ -45,7 +45,7 @@ func (e sortableEntries) Less(i, j int) bool {
 
 // Implement sort.Interface swap method,
 // used to re-arrange misplaced entries.
-func (e sortableEntries) Swap(i, j int) {
+func (e SortableEntries) Swap(i, j int) {
 	e[i], e[j] = e[j], e[i]
 }
 
