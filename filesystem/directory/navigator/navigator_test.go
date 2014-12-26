@@ -563,7 +563,7 @@ var _ = Describe("Navigator", func() {
 				It("returns disk/partition space statistics as its second element", func() {
 					avail := int64(navigator.availableBytes())
 					total := int64(navigator.totalBytes())
-					status := fmt.Sprintf("%v of %v available (%v%% full)", view.Size(avail), view.Size(total), avail*100/total)
+					status := fmt.Sprintf("%v of %v available (%v%% full)", view.Size(avail), view.Size(total), (total-avail)*100/total)
 
 					Expect(buffer.Status[1]).To(Equal(status))
 				})
