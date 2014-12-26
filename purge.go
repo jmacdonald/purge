@@ -28,12 +28,18 @@ func main() {
 	// Start the view in a goroutine.
 	go view.New(buffers)
 
-	// Start the navigator in a goroutine.
-	currentPath, err := os.Getwd()
-	if err != nil {
-		panic(err)
+	// Start the navigator in the specified directory,
+	// falling back to the current directory.
+	// FIXME: Check that the directory exists/is valid.
+	startingPath := os.Args[1]
+	if startingPath == "" {
+		var err error
+		startingPath, err = os.Getwd()
+		if err != nil {
+			panic(err)
+		}
 	}
-	go navigator.NewNavigator(currentPath, nav, buffers)
+	go navigator.NewNavigator(startingPath, nav, buffers)
 
 	// Listen for user input, relaying the
 	// appropriate commands to the navigator.
