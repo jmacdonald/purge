@@ -5,6 +5,7 @@ data formatting and display updates (using termbox).
 package view
 
 import "fmt"
+import "strings"
 import "github.com/nsf/termbox-go"
 import "unicode/utf8"
 
@@ -101,6 +102,22 @@ func renderRow(row Row, rowNumber int) {
 func renderStatus(status [2]string) {
 	width, height := termbox.Size()
 
+	// The status line components may be too long to fit on-screen. If that's the case,
+	// we'll trim the left side of the path, since it's the least important
+	// piece of information of the bunch.
+	maximumLeftSideWidth := width - len(status[1]) - 1
+	if len(status[0]) > maximumLeftSideWidth {
+		// Figure out how much of a character surplus we have.
+		excess := len(status[0]) - maximumLeftSideWidth
+
+		// Trim the leading part of the path, adding an elipsis.
+		status[0] = "..." + status[0][excess+3:]
+	}
+
+	// Build a string representing the status line contents, padding with spaces.
+	padding := strings.Repeat(" ", (maximumLeftSideWidth-len(status[0]))) + " "
+	statusLineContents := status[0] + padding + status[1]
+
 	// Print the status to the bottom of the screen by stepping
 	// through the bottom row one cell at a time and printing
 	// a character from the status message, or a blank space,
@@ -111,12 +128,8 @@ func renderStatus(status [2]string) {
 
 		// Decode the next rune and advance the offset by its length,
 		// or if we've already read the entire string, use a space instead.
-		if offset < len(status[0]) {
-			character, size = utf8.DecodeRune([]byte(status[0])[offset:])
-			offset += size
-		} else {
-			character = ' '
-		}
+		character, size = utf8.DecodeRune([]byte(statusLineContents)[offset:])
+		offset += size
 
 		// Print the character to the screen in a highlighted colour.
 		termbox.SetCell(column, height-1, character, termbox.ColorBlack, termbox.ColorWhite)
