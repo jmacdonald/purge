@@ -825,7 +825,7 @@ var _ = Describe("Navigator", func() {
 		var result uint64
 
 		BeforeEach(func() {
-			navigator.SetWorkingDirectory(originalPath)
+			navigator.SetWorkingDirectory(originalPath + "/sample")
 		})
 
 		JustBeforeEach(func() {
