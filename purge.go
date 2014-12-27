@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"runtime"
+	"fmt"
 
 	"github.com/jmacdonald/purge/filesystem/directory/navigator"
 	"github.com/jmacdonald/purge/input"
@@ -12,6 +13,27 @@ import (
 func main() {
 	// Use all available "logical CPUs", as reported by the machine.
 	runtime.GOMAXPROCS(runtime.NumCPU())
+
+	// Determine in which directory to start,
+	// validating the path if passed by the user.
+	var startingPath string
+	if len(os.Args) > 1 {
+		startingPath = os.Args[1]
+
+		// Check that the specified directory exists.
+		path, error := os.Stat(startingPath)
+		if !(error == nil && path.IsDir()) {
+			fmt.Println("Can't open the specified directory.")
+			return
+		}
+	} else {
+		// Fall back to the current directory.
+		var err error
+		startingPath, err = os.Getwd()
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	// Initialize (and schedule cleanup for) the view.
 	view.Initialize()
@@ -28,17 +50,7 @@ func main() {
 	// Start the view in a goroutine.
 	go view.New(buffers)
 
-	// Start the navigator in the specified directory,
-	// falling back to the current directory.
-	// FIXME: Check that the directory exists/is valid.
-	startingPath := os.Args[1]
-	if startingPath == "" {
-		var err error
-		startingPath, err = os.Getwd()
-		if err != nil {
-			panic(err)
-		}
-	}
+	// Start the navigator in the starting directory.
 	go navigator.NewNavigator(startingPath, nav, buffers)
 
 	// Listen for user input, relaying the
