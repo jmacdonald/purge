@@ -336,14 +336,14 @@ func (navigator *Navigator) View(maxRows int) *view.Buffer {
 
 func (navigator *Navigator) totalBytes() uint64 {
 	stats := new(syscall.Statfs_t)
-	syscall.Statfs(navigator.currentPath, stats)
+	syscall.Statfs(navigator.currentPath + "/", stats)
 
 	return stats.Blocks * uint64(stats.Bsize)
 }
 
 func (navigator *Navigator) availableBytes() uint64 {
 	stats := new(syscall.Statfs_t)
-	syscall.Statfs(navigator.currentPath, stats)
+	syscall.Statfs(navigator.currentPath + "/", stats)
 
 	return stats.Bfree * uint64(stats.Bsize)
 }

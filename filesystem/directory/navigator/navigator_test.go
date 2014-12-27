@@ -819,6 +819,16 @@ var _ = Describe("Navigator", func() {
 			syscall.Statfs(navigator.currentPath, stats)
 			Expect(result).To(Equal(stats.Blocks * uint64(stats.Bsize)))
 		})
+
+		Context("when in the root directory", func() {
+			BeforeEach(func() {
+				navigator.SetWorkingDirectory("/")
+			})
+
+			It("returns a non-zero value", func() {
+				Expect(result).ToNot(BeZero())
+			})
+		})
 	})
 
 	Describe("availableBytes", func() {
@@ -836,6 +846,16 @@ var _ = Describe("Navigator", func() {
 			stats := new(syscall.Statfs_t)
 			syscall.Statfs(navigator.currentPath, stats)
 			Expect(result).To(Equal(stats.Bfree * uint64(stats.Bsize)))
+		})
+
+		Context("when in the root directory", func() {
+			BeforeEach(func() {
+				navigator.SetWorkingDirectory("/")
+			})
+
+			It("returns a non-zero value", func() {
+				Expect(result).ToNot(BeZero())
+			})
 		})
 	})
 })
