@@ -150,6 +150,16 @@ var _ = Describe("Navigator", func() {
 				Expect(navigator.CurrentPath()).To(Equal(path[:len(path)-1]))
 			})
 		})
+
+		Context("path is the root", func() {
+			BeforeEach(func() {
+				path = "/"
+			})
+
+			It("has entries", func() {
+				Expect(len(navigator.Entries())).ToNot(BeZero())
+			})
+		})
 	})
 
 	Describe("SortEntries", func() {

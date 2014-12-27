@@ -137,7 +137,7 @@ func (navigator *Navigator) populateEntries() {
 	var size int64
 
 	// Read the directory entries.
-	dirEntries, _ := ioutil.ReadDir(navigator.currentPath)
+	dirEntries, _ := ioutil.ReadDir(navigator.currentPath + "/")
 	navigator.entries = make([]*directory.Entry, len(dirEntries))
 
 	// Allocate a buffered channel on which we'll receive
