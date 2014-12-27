@@ -34,6 +34,8 @@ var _ = Describe("Navigator", func() {
 	})
 
 	Describe("SetWorkingDirectory", func() {
+		var previousEntryCount int
+
 		BeforeEach(func() {
 			navigator.SetWorkingDirectory(originalPath)
 		})
@@ -85,6 +87,10 @@ var _ = Describe("Navigator", func() {
 				// Increment the selected index so we can ensure
 				// it isn't reset to zero later on.
 				navigator.SelectNextEntry()
+
+				// Store the entry count before we run this 
+				// operation so that we can ensure it doesn't change.
+				previousEntryCount = len(navigator.Entries())
 			})
 
 			It("returns an error", func() {
@@ -96,7 +102,7 @@ var _ = Describe("Navigator", func() {
 			})
 
 			It("does not update entries", func() {
-				Expect(len(navigator.Entries())).To(Equal(4))
+				Expect(len(navigator.Entries())).To(Equal(previousEntryCount))
 			})
 
 			It("does not reset selected index to zero", func() {
@@ -111,6 +117,10 @@ var _ = Describe("Navigator", func() {
 				// Increment the selected index so we can ensure
 				// it isn't reset to zero later on.
 				navigator.SelectNextEntry()
+
+				// Store the entry count before we run this 
+				// operation so that we can ensure it doesn't change.
+				previousEntryCount = len(navigator.Entries())
 			})
 
 			It("returns an error", func() {
@@ -122,7 +132,7 @@ var _ = Describe("Navigator", func() {
 			})
 
 			It("does not update entries", func() {
-				Expect(len(navigator.Entries())).To(Equal(4))
+				Expect(len(navigator.Entries())).To(Equal(previousEntryCount))
 			})
 
 			It("does not reset selected index to zero", func() {
