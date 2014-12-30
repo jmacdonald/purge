@@ -253,7 +253,7 @@ func (navigator *Navigator) View(maxRows int) *view.Buffer {
 	} else {
 		avail := int64(navigator.availableBytes())
 		total := int64(navigator.totalBytes())
-		status[1] = fmt.Sprintf("%v of %v available (%v%% full)", view.Size(avail), view.Size(total), (total-avail)*100/total)
+		status[1] = fmt.Sprintf("%v available (%v%% used)", view.Size(avail), (total-avail)*100/total)
 	}
 
 	// Create a slice with a size that is the lesser of the entry count and maxRows.
@@ -336,14 +336,14 @@ func (navigator *Navigator) View(maxRows int) *view.Buffer {
 
 func (navigator *Navigator) totalBytes() uint64 {
 	stats := new(syscall.Statfs_t)
-	syscall.Statfs(navigator.currentPath + "/", stats)
+	syscall.Statfs(navigator.currentPath+"/", stats)
 
 	return stats.Blocks * uint64(stats.Bsize)
 }
 
 func (navigator *Navigator) availableBytes() uint64 {
 	stats := new(syscall.Statfs_t)
-	syscall.Statfs(navigator.currentPath + "/", stats)
+	syscall.Statfs(navigator.currentPath+"/", stats)
 
 	return stats.Bfree * uint64(stats.Bsize)
 }

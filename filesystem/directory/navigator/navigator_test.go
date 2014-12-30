@@ -88,7 +88,7 @@ var _ = Describe("Navigator", func() {
 				// it isn't reset to zero later on.
 				navigator.SelectNextEntry()
 
-				// Store the entry count before we run this 
+				// Store the entry count before we run this
 				// operation so that we can ensure it doesn't change.
 				previousEntryCount = len(navigator.Entries())
 			})
@@ -118,7 +118,7 @@ var _ = Describe("Navigator", func() {
 				// it isn't reset to zero later on.
 				navigator.SelectNextEntry()
 
-				// Store the entry count before we run this 
+				// Store the entry count before we run this
 				// operation so that we can ensure it doesn't change.
 				previousEntryCount = len(navigator.Entries())
 			})
@@ -583,7 +583,7 @@ var _ = Describe("Navigator", func() {
 				It("returns disk/partition space statistics as its second element", func() {
 					avail := int64(navigator.availableBytes())
 					total := int64(navigator.totalBytes())
-					status := fmt.Sprintf("%v of %v available (%v%% full)", view.Size(avail), view.Size(total), (total-avail)*100/total)
+					status := fmt.Sprintf("%v available (%v%% used)", view.Size(avail), (total-avail)*100/total)
 
 					Expect(buffer.Status[1]).To(Equal(status))
 				})
